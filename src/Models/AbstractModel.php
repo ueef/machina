@@ -3,12 +3,11 @@ declare(strict_types=1);
 
 namespace Ueef\Machina\Models;
 
-use Ueef\Machina\Entity;
 use Ueef\Machina\Exceptions\ModelException;
-use Ueef\Machina\Interfaces\ModelAwareInterface;
 use Ueef\Machina\Interfaces\ModelInterface;
 use Ueef\Machina\Interfaces\EntityInterface;
 use Ueef\Machina\Interfaces\FilterInterface;
+use Ueef\Machina\Interfaces\ModelAwareInterface;
 use Ueef\Machina\Interfaces\RepositoryInterface;
 
 abstract class AbstractModel implements ModelInterface

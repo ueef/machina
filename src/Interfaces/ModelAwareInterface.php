@@ -5,10 +5,10 @@ namespace Ueef\Machina\Interfaces;
 
 interface ModelAwareInterface
 {
-    public static function setModel(ModelInterface $model);
-
     /**
      * @return ModelInterface
      */
-    public static function getModel();
+    public static function model();
+
+    public static function setModel(ModelInterface $model);
 }
