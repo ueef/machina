@@ -1,0 +1,32 @@
+{
+  "name": "ueef/machina",
+  "type": "library",
+  "license": "MIT",
+  "description": "",
+  "authors": [
+    {
+      "name": "ueef",
+      "email": "artem@arkadev.org"
+    }
+  ],
+  "require": {
+    "php": ">=7.2",
+    "ueef/encoder": "^0.1.0",
+    "ueef/packable": "^0.7.0",
+    "ueef/assignable": "^0.2.0",
+    "phpunit/phpunit": "^7.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "Ueef\\Machina\\": "src",
+    }
+  },
+  "require-dev": {
+    "fzaninotto/faker": "^1.8"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Ueef\\Machina\\Tests\\": "tests",
+    }
+  }
+}
