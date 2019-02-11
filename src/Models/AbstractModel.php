@@ -25,8 +25,8 @@ abstract class AbstractModel implements ModelInterface
     public function __construct(EntityInterface $proto, RepositoryInterface $repository)
     {
         $this->proto = $proto;
-        $this->proto_id = $this->getEntityId($proto);
         $this->repository = $repository;
+        $this->proto_id = $this->getEntityId($proto);
 
         if ($proto instanceof ModelAwareInterface) {
             $proto::setModel($this);
@@ -183,7 +183,7 @@ abstract class AbstractModel implements ModelInterface
 
     public function getEntityId(EntityInterface $entity): array
     {
-        return $this->getRepository()->getItemId($entity->pack());
+        return $this->repository->getItemId($entity->pack());
     }
 
     private function makeLocking(array $id): string
