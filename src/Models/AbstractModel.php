@@ -34,7 +34,7 @@ class AbstractModel implements ModelInterface
         }
     }
 
-    public function get(array $filters = [], array $orders = [], int $offset = 0): ?Entity
+    public function get(array $filters = [], array $orders = [], int $offset = 0)
     {
         $items = $this->repository->find($filters, $orders, 1, $offset);
         $items = $this->unpack($items);
