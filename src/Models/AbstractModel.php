@@ -11,7 +11,7 @@ use Ueef\Machina\Interfaces\EntityInterface;
 use Ueef\Machina\Interfaces\FilterInterface;
 use Ueef\Machina\Interfaces\RepositoryInterface;
 
-class AbstractModel implements ModelInterface
+abstract class AbstractModel implements ModelInterface
 {
     /** @var EntityInterface */
     private $proto;
@@ -30,7 +30,7 @@ class AbstractModel implements ModelInterface
         $this->repository = $repository;
 
         if ($proto instanceof ModelAwareInterface) {
-            $proto::injectModel($this);
+            $proto::setModel($this);
         }
     }
 
