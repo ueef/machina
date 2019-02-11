@@ -13,8 +13,7 @@
     "php": ">=7.2",
     "ext-json": "*",
     "ueef/encoder": "^0.1.0",
-    "ueef/packable": "^0.7.0",
-    "ueef/assignable": "^0.2.0"
+    "ueef/packable": "^0.7.0"
   },
   "autoload": {
     "psr-4": {
