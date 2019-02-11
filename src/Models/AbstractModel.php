@@ -97,8 +97,7 @@ abstract class AbstractModel implements ModelInterface
             $ids[$index] = $this->repository->getItemId($item);
         }
 
-        $items = $this->findByIds($ids);
-        foreach ($this->unpack($items) as $index => $entity) {
+        foreach ($this->findByIds($ids) as $index => $entity) {
             $entities[$index] = $entity;
         }
     }
@@ -129,8 +128,7 @@ abstract class AbstractModel implements ModelInterface
             $ids[$index] = $this->getEntityId($entity);
         }
 
-        $items = $this->findByIds($ids);
-        foreach ($this->unpack($items) as $index => $entity) {
+        foreach ($this->findByIds($ids) as $index => $entity) {
             $entities[$index] = $entity;
         }
     }
