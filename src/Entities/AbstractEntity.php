@@ -12,7 +12,7 @@ abstract class AbstractEntity implements EntityInterface, ModelAwareInterface
     /** @var ModelInterface[] */
     private static $models;
 
-    public static function getModel()
+    public static function model()
     {
         return static::$models[static::class];
     }
