@@ -7,7 +7,6 @@ use Ueef\Machina\Exceptions\ModelException;
 use Ueef\Machina\Interfaces\ModelInterface;
 use Ueef\Machina\Interfaces\EntityInterface;
 use Ueef\Machina\Interfaces\FilterInterface;
-use Ueef\Machina\Interfaces\ModelAwareInterface;
 use Ueef\Machina\Interfaces\RepositoryInterface;
 
 abstract class AbstractModel implements ModelInterface
@@ -27,10 +26,6 @@ abstract class AbstractModel implements ModelInterface
         $this->proto = $proto;
         $this->repository = $repository;
         $this->proto_id = $this->getEntityId($proto);
-
-        if ($proto instanceof ModelAwareInterface) {
-            $proto::setModel($this);
-        }
     }
 
     public function get(array $filters = [], array $orders = [], int $offset = 0)
