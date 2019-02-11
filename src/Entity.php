@@ -8,7 +8,7 @@ use Ueef\Packable\Interfaces\PackableInterface;
 
 class Entity implements EntityInterface
 {
-    public function getId(): array
+    public function getEntityId(): array
     {
         return [];
     }

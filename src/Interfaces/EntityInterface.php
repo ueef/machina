@@ -7,5 +7,5 @@ use Ueef\Packable\Interfaces\PackableInterface;
 
 interface EntityInterface extends PackableInterface
 {
-    public function getId(): array;
+    public function getEntityId(): array;
 }

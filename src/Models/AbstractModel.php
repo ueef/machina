@@ -26,7 +26,7 @@ class AbstractModel implements ModelInterface
     public function __construct(EntityInterface $entity, RepositoryInterface $repository)
     {
         $this->proto = $entity;
-        $this->proto_id = $entity->getId();
+        $this->proto_id = $entity->getEntityId();
         $this->repository = $repository;
 
         if ($entity instanceof ModelAwareInterface) {
@@ -102,7 +102,7 @@ class AbstractModel implements ModelInterface
     public function update(EntityInterface &...$entities): void
     {
         foreach ($this->pack($entities) as $index => $item) {
-            $this->repository->update($item, $this->makeFiltersById($entities[$index]->getId()), [], 1);
+            $this->repository->update($item, $this->makeFiltersById($entities[$index]->getEntityId()), [], 1);
         }
 
         $this->refresh($entities);
@@ -132,12 +132,12 @@ class AbstractModel implements ModelInterface
 
     public function lock(EntityInterface $entity, bool $wait = true): bool
     {
-        return $this->repository->lock($this->makeLocking($entity->getId()), $wait);
+        return $this->repository->lock($this->makeLocking($entity->getEntityId()), $wait);
     }
 
     public function unlock(EntityInterface $entity): bool
     {
-        return $this->repository->unlock($this->makeLocking($entity->getId()));
+        return $this->repository->unlock($this->makeLocking($entity->getEntityId()));
     }
 
     public function getRepository(): RepositoryInterface
