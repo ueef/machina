@@ -11,7 +11,7 @@ use Ueef\Machina\Interfaces\ModelAwareInterface;
 abstract class AbstractEntity implements EntityInterface, ModelAwareInterface
 {
     /** @var ModelInterface[] */
-    private static $models;
+    protected static $models;
 
     public static function model()
     {
