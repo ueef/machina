@@ -22,5 +22,7 @@ interface ModelInterface
     public function lock(EntityInterface $entity, bool $nowait = false): bool;
     public function unlock(EntityInterface $entity): bool;
 
+    public function getEntityId(EntityInterface $entity): array;
+
     public function getRepository(): RepositoryInterface;
 }

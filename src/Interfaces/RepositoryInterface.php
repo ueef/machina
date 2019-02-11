@@ -19,5 +19,7 @@ interface RepositoryInterface
     public function rollback(): void;
     public function transact(callable $func): void;
 
+    public function getItemId(array $item): array;
+
     public function getMetadata(): MetadataInterface;
 }

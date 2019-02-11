@@ -7,5 +7,5 @@ use Ueef\Packable\Interfaces\PackableInterface;
 
 interface EntityInterface extends PackableInterface
 {
-    public function getEntityId(): array;
+    public static function unpack(array $packed): EntityInterface;
 }

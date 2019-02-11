@@ -33,4 +33,9 @@ interface MetadataInterface
      * @return PropertyInterface[]
      */
     public function getGeneratedProperties(): array;
+
+    /**
+     * @return PropertyInterface[]
+     */
+    public function getIdentifiedProperties(): array;
 }

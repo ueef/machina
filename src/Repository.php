@@ -109,6 +109,16 @@ class Repository implements RepositoryInterface
         }
     }
 
+    public function getItemId(array $item): array
+    {
+        $id = [];
+        foreach ($this->metadata->getIdentifiedProperties() as $key => $property) {
+            $id[$key] = $item[$key] ?? null;
+        }
+
+        return $id;
+    }
+
     public function getMetadata(): MetadataInterface
     {
         return $this->metadata;

@@ -23,14 +23,14 @@ class AbstractModel implements ModelInterface
     private $repository;
 
 
-    public function __construct(EntityInterface $entity, RepositoryInterface $repository)
+    public function __construct(EntityInterface $proto, RepositoryInterface $repository)
     {
-        $this->proto = $entity;
-        $this->proto_id = $entity->getEntityId();
+        $this->proto = $proto;
+        $this->proto_id = $this->getEntityId($proto);
         $this->repository = $repository;
 
-        if ($entity instanceof ModelAwareInterface) {
-            $entity::injectModel($this);
+        if ($proto instanceof ModelAwareInterface) {
+            $proto::injectModel($this);
         }
     }
 
@@ -47,7 +47,7 @@ class AbstractModel implements ModelInterface
 
     public function getById(array $id)
     {
-        $items = $this->repository->find($this->makeFiltersById($id), [], 1);
+        $items = $this->repository->find($this->makeFiltersById($this->correctId($id)), [], 1);
         $items = $this->unpack($items);
         if ($items) {
             return $items[0];
@@ -66,23 +66,27 @@ class AbstractModel implements ModelInterface
 
     public function findByIds(array $ids): array
     {
-        $items = array_flip(array_keys($ids));
-        foreach ($this->find($this->makeFiltersByIds($ids)) as $item) {
-            $index = array_search(array_intersect_key($item, $this->proto_id), $ids);
+        $items = [];
+        foreach ($ids as $index => $id) {
+            $ids[$index] = $this->correctId($id);
+            $items[$index] = null;
+        }
+
+        foreach ($this->repository->find($this->makeFiltersByIds($ids)) as $item) {
+            $index = array_search($this->repository->getItemId($item), $ids);
             if (false === $index) {
                 throw new ModelException("cannot match a founded item with id");
             }
             $items[$index] = $item;
         }
 
-        return $items;
+        return $this->unpack($items);
     }
 
     public function count(array $filters = []): int
     {
         return $this->repository->count($filters);
     }
-
 
     public function insert(EntityInterface ...$entities): void
     {
@@ -102,7 +106,7 @@ class AbstractModel implements ModelInterface
     public function update(EntityInterface &...$entities): void
     {
         foreach ($this->pack($entities) as $index => $item) {
-            $this->repository->update($item, $this->makeFiltersById($entities[$index]->getEntityId()), [], 1);
+            $this->repository->update($item, $this->makeFiltersById($this->repository->getItemId($item)), [], 1);
         }
 
         $this->refresh($entities);
@@ -112,7 +116,7 @@ class AbstractModel implements ModelInterface
     {
         $ids = [];
         foreach ($entities as $index => $entity) {
-            $ids[$index] = $entity;
+            $ids[$index] = $this->getEntityId($entity);
         }
 
         $this->repository->delete($this->makeFiltersByIds($ids));
@@ -122,7 +126,7 @@ class AbstractModel implements ModelInterface
     {
         $ids = [];
         foreach ($entities as $index => $entity) {
-            $ids[$index] = $entity;
+            $ids[$index] = $this->getEntityId($entity);
         }
 
         foreach ($this->unpack($this->findByIds($ids)) as $index => $item) {
@@ -132,12 +136,12 @@ class AbstractModel implements ModelInterface
 
     public function lock(EntityInterface $entity, bool $wait = true): bool
     {
-        return $this->repository->lock($this->makeLocking($entity->getEntityId()), $wait);
+        return $this->repository->lock($this->makeLocking($this->getEntityId($entity)), $wait);
     }
 
     public function unlock(EntityInterface $entity): bool
     {
-        return $this->repository->unlock($this->makeLocking($entity->getEntityId()));
+        return $this->repository->unlock($this->makeLocking($this->getEntityId($entity)));
     }
 
     public function getRepository(): RepositoryInterface
@@ -178,14 +182,18 @@ class AbstractModel implements ModelInterface
         return $items;
     }
 
+    public function getEntityId(EntityInterface $entity): array
+    {
+        return $this->getRepository()->getItemId($entity->pack());
+    }
+
     private function makeLocking(array $id): string
     {
-        return json_encode(array_replace($this->proto_id, $id));
+        return json_encode($id);
     }
 
     private function makeFiltersById(array $id)
     {
-        $id = array_intersect_key($id, $this->proto_id);
         $filters = [];
         foreach ($id as $key => $value) {
             $filters[] = [FilterInterface::EQ, $key, $value];
@@ -204,5 +212,10 @@ class AbstractModel implements ModelInterface
         return [
             [FilterInterface::OR, $filters],
         ];
+    }
+
+    private function correctId(array $id): array
+    {
+        return array_replace($this->proto_id, array_intersect_key($id, $this->proto_id));
     }
 }
