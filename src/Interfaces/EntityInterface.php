@@ -7,5 +7,9 @@ use Ueef\Packable\Interfaces\PackableInterface;
 
 interface EntityInterface extends PackableInterface
 {
-    public static function unpack(array $packed): EntityInterface;
+    /**
+     * @param array $packed
+     * @return EntityInterface
+     */
+    public static function unpack(array $packed);
 }
