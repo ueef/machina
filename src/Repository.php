@@ -6,7 +6,6 @@ namespace Ueef\Machina;
 use Throwable;
 use Ueef\Machina\Exceptions\RepositoryException;
 use Ueef\Machina\Interfaces\DriverInterface;
-use Ueef\Machina\Interfaces\FilterInterface;
 use Ueef\Machina\Interfaces\MetadataInterface;
 use Ueef\Machina\Interfaces\RepositoryInterface;
 use Ueef\Machina\Interfaces\LockableDriverInterface;
@@ -95,18 +94,6 @@ class Repository implements RepositoryInterface
         }
 
         throw new RepositoryException(["%s doesn't implement %s", get_class($this->driver), TransactionalDriverInterface::class]);
-    }
-
-    public function transact(callable $func): void
-    {
-        try {
-            $this->begin();
-            $func();
-            $this->commit();
-        } catch (Throwable $e) {
-            $this->rollback();
-            throw $e;
-        }
     }
 
     public function getItemId(array $item): array

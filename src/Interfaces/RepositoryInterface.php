@@ -17,7 +17,6 @@ interface RepositoryInterface
     public function begin(): void;
     public function commit(): void;
     public function rollback(): void;
-    public function transact(callable $func): void;
 
     public function getItemId(array $item): array;
 
