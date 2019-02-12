@@ -87,7 +87,7 @@ class EntitiesManager implements EntitiesManagerInterface
         $this->repository->insert($this->pack($entities));
     }
 
-    public function create(EntityInterface &...$entities): void
+    public function create(EntityInterface &...$entities): array
     {
         $items = $this->pack($entities);
         $this->repository->insert($items);
@@ -97,18 +97,24 @@ class EntitiesManager implements EntitiesManagerInterface
             $ids[$index] = $this->repository->getItemId($item);
         }
 
+        $result = [];
         foreach ($this->findByIds($ids) as $index => $entity) {
-            $entities[$index] = $entity;
+            if ($entity) {
+                $entities[$index] = $entity;
+            }
+            $result[$index] = $entity;
         }
+
+        return $result;
     }
 
-    public function update(EntityInterface &...$entities): void
+    public function update(EntityInterface &...$entities): array
     {
         foreach ($this->pack($entities) as $index => $item) {
             $this->repository->update($item, $this->makeFiltersById($this->repository->getItemId($item)), [], 1);
         }
 
-        $this->refresh($entities);
+        return $this->refresh(...$entities);
     }
 
     public function delete(EntityInterface &...$entities): void
@@ -121,16 +127,22 @@ class EntitiesManager implements EntitiesManagerInterface
         $this->repository->delete($this->makeFiltersByIds($ids));
     }
 
-    public function refresh(EntityInterface &...$entities): void
+    public function refresh(EntityInterface &...$entities): array
     {
         $ids = [];
         foreach ($entities as $index => $entity) {
             $ids[$index] = $this->getEntityId($entity);
         }
 
+        $_entities = [];
         foreach ($this->findByIds($ids) as $index => $entity) {
-            $entities[$index] = $entity;
+            if ($entity) {
+                $entities[$index] = $entity;
+            }
+            $_entities[$index] = $entity;
         }
+
+        return $_entities;
     }
 
     public function lock(EntityInterface $entity, bool $wait = true): bool
