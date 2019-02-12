@@ -1,15 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace Ueef\Machina\Models;
+namespace Ueef\Machina;
 
 use Ueef\Machina\Exceptions\ModelException;
-use Ueef\Machina\Interfaces\ModelInterface;
 use Ueef\Machina\Interfaces\EntityInterface;
 use Ueef\Machina\Interfaces\FilterInterface;
 use Ueef\Machina\Interfaces\RepositoryInterface;
+use Ueef\Machina\Interfaces\EntitiesManagerInterface;
 
-abstract class AbstractModel implements ModelInterface
+class EntitiesManager implements EntitiesManagerInterface
 {
     /** @var EntityInterface */
     private $proto;

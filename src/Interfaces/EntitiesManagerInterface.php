@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Ueef\Machina\Interfaces;
 
-interface ModelInterface
+interface EntitiesManagerInterface
 {
     public function get(array $filters = [], array $orders = [], int $offset = 0);
     public function getById(array $id);
@@ -20,8 +20,9 @@ interface ModelInterface
     public function refresh(EntityInterface &...$entities): void;
 
     public function lock(EntityInterface $entity, bool $nowait = false): bool;
-    public function lockById(array $id, bool $nowait = false): bool;
     public function unlock(EntityInterface $entity): bool;
+
+    public function lockById(array $id, bool $nowait = false): bool;
     public function unlockById(array $id): bool;
 
     public function begin(): void;
