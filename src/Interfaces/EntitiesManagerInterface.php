@@ -14,8 +14,8 @@ interface EntitiesManagerInterface
     public function count(array $filters = []): int;
 
     public function insert(EntityInterface ...$entities): void;
-    public function create(EntityInterface &...$entities): array;
-    public function update(EntityInterface &...$entities): array;
+    public function create(EntityInterface &...$entities): void;
+    public function update(EntityInterface &...$entities): void;
     public function delete(EntityInterface &...$entities): void;
     public function refresh(EntityInterface &...$entities): array;
 

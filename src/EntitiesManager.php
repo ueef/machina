@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace Ueef\Machina;
 
-use Ueef\Machina\Exceptions\ModelException;
 use Ueef\Machina\Interfaces\EntityInterface;
 use Ueef\Machina\Interfaces\FilterInterface;
 use Ueef\Machina\Interfaces\RepositoryInterface;
 use Ueef\Machina\Interfaces\EntitiesManagerInterface;
+use Ueef\Machina\Exceptions\EntitiesManagerException;
 
 class EntitiesManager implements EntitiesManagerInterface
 {
@@ -69,7 +69,7 @@ class EntitiesManager implements EntitiesManagerInterface
         foreach ($this->repository->find($this->makeFiltersByIds($ids)) as $item) {
             $index = array_search($this->repository->getItemId($item), $ids);
             if (false === $index) {
-                throw new ModelException("cannot match a founded item with id");
+                throw new EntitiesManagerException("cannot match a founded item with id");
             }
             $items[$index] = $item;
         }
@@ -87,7 +87,7 @@ class EntitiesManager implements EntitiesManagerInterface
         $this->repository->insert($this->pack($entities));
     }
 
-    public function create(EntityInterface &...$entities): array
+    public function create(EntityInterface &...$entities): void
     {
         $items = $this->pack($entities);
         $this->repository->insert($items);
@@ -97,24 +97,28 @@ class EntitiesManager implements EntitiesManagerInterface
             $ids[$index] = $this->repository->getItemId($item);
         }
 
-        $result = [];
         foreach ($this->findByIds($ids) as $index => $entity) {
-            if ($entity) {
-                $entities[$index] = $entity;
+            if (null === $entity) {
+                throw new EntitiesManagerException("cannot find one of inserted entities");
             }
-            $result[$index] = $entity;
+            $entities[$index] = $entity;
         }
-
-        return $result;
     }
 
-    public function update(EntityInterface &...$entities): array
+    public function update(EntityInterface &...$entities): void
     {
+        $ids = [];
         foreach ($this->pack($entities) as $index => $item) {
-            $this->repository->update($item, $this->makeFiltersById($this->repository->getItemId($item)), [], 1);
+            $ids[$index] = $this->repository->getItemId($item);
+            $this->repository->update($item, $this->makeFiltersById($ids[$index]), [], 1);
         }
 
-        return $this->refresh(...$entities);
+        foreach ($this->findByIds($ids) as $index => $entity) {
+            if (null === $entity) {
+                throw new EntitiesManagerException("cannot find one of entities after update");
+            }
+            $entities[$index] = $entity;
+        }
     }
 
     public function delete(EntityInterface &...$entities): void
@@ -188,7 +192,7 @@ class EntitiesManager implements EntitiesManagerInterface
     /**
      * @param EntityInterface[] $entities
      * @return array[]
-     * @throws ModelException
+     * @throws EntitiesManagerException
      */
     private function pack(array $entities): array
     {
@@ -196,7 +200,7 @@ class EntitiesManager implements EntitiesManagerInterface
             if ($entity instanceof $this->proto) {
                 $entity = $entity->pack();
             } else {
-                throw new ModelException(["item must be type of %s", get_class($this->proto)]);
+                throw new EntitiesManagerException(["item must be type of %s", get_class($this->proto)]);
             }
         }
 
