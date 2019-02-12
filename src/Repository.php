@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Ueef\Machina;
 
-use Throwable;
 use Ueef\Machina\Exceptions\RepositoryException;
 use Ueef\Machina\Interfaces\DriverInterface;
 use Ueef\Machina\Interfaces\MetadataInterface;
