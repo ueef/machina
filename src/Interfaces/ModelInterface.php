@@ -22,6 +22,11 @@ interface ModelInterface
     public function lock(EntityInterface $entity, bool $nowait = false): bool;
     public function unlock(EntityInterface $entity): bool;
 
+    public function begin(): void;
+    public function commit(): void;
+    public function rollback(): void;
+    public function transact(callable $func): void;
+
     public function getEntityId(EntityInterface $entity): array;
 
     public function getRepository(): RepositoryInterface;

@@ -143,6 +143,26 @@ abstract class AbstractModel implements ModelInterface
         return $this->repository->unlock($this->makeLocking($this->getEntityId($entity)));
     }
 
+    public function begin(): void
+    {
+        $this->repository->begin();
+    }
+
+    public function commit(): void
+    {
+        $this->repository->commit();
+    }
+
+    public function rollback(): void
+    {
+        $this->repository->rollback();
+    }
+
+    public function transact(callable $func): void
+    {
+        $this->repository->transact($func);
+    }
+
     public function getRepository(): RepositoryInterface
     {
         return $this->repository;
