@@ -135,12 +135,22 @@ abstract class AbstractModel implements ModelInterface
 
     public function lock(EntityInterface $entity, bool $wait = true): bool
     {
-        return $this->repository->lock($this->makeLocking($this->getEntityId($entity)), $wait);
+        return $this->lockById($this->getEntityId($entity), $wait);
     }
 
     public function unlock(EntityInterface $entity): bool
     {
-        return $this->repository->unlock($this->makeLocking($this->getEntityId($entity)));
+        return $this->unlockById($this->getEntityId($entity));
+    }
+
+    public function lockById(array $id, bool $wait = true): bool
+    {
+        return $this->repository->lock($this->makeLocking($id), $wait);
+    }
+
+    public function unlockById(array $id): bool
+    {
+        return $this->repository->unlock($this->makeLocking($id));
     }
 
     public function begin(): void
@@ -208,7 +218,7 @@ abstract class AbstractModel implements ModelInterface
 
     private function makeLocking(array $id): string
     {
-        return json_encode($id);
+        return json_encode($this->correctId($id));
     }
 
     private function makeFiltersById(array $id)

@@ -20,7 +20,9 @@ interface ModelInterface
     public function refresh(EntityInterface &...$entities): void;
 
     public function lock(EntityInterface $entity, bool $nowait = false): bool;
+    public function lockById(array $id, bool $nowait = false): bool;
     public function unlock(EntityInterface $entity): bool;
+    public function unlockById(array $id): bool;
 
     public function begin(): void;
     public function commit(): void;
