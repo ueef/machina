@@ -84,7 +84,8 @@ class EntitiesManager implements EntitiesManagerInterface
 
     public function insert(EntityInterface ...$entities): void
     {
-        $this->repository->insert($this->pack($entities));
+        $items = $this->pack($entities);
+        $this->repository->insert($items);
     }
 
     public function create(EntityInterface &...$entities): void
