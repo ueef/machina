@@ -168,11 +168,6 @@ class EntitiesManager implements EntitiesManagerInterface
         $this->repository->rollback();
     }
 
-    public function transact(callable $func): void
-    {
-        $this->repository->transact($func);
-    }
-
     public function getRepository(): RepositoryInterface
     {
         return $this->repository;
