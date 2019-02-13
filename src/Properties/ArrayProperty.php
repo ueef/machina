@@ -11,9 +11,4 @@ class ArrayProperty extends AbstractProperty
     {
         return self::TYPE_ARRAY;
     }
-
-    public function validate($value): void
-    {
-
-    }
 }
