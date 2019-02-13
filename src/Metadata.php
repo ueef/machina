@@ -22,10 +22,10 @@ class Metadata implements MetadataInterface
     private $generation_strategy;
 
     /** @var PropertyInterface[] */
-    private $generated_properties;
+    private $generated_properties = [];
 
     /** @var PropertyInterface[] */
-    private $identified_properties;
+    private $identified_properties = [];
 
 
     public function __construct(string $source, array $properties, string $generationStrategy = self::GENERATION_STRATEGY_AUTO, ?GeneratorInterface $generator = null)
