@@ -54,45 +54,45 @@ class Repository implements RepositoryInterface
     {
         if ($this->driver instanceof LockableDriverInterface) {
             return $this->driver->lock($this->metadata, $resource, $wait);
+        } else {
+            throw new RepositoryException(["%s doesn't implement %s", get_class($this->driver), LockableDriverInterface::class]);
         }
-
-        throw new RepositoryException(["%s doesn't implement %s", get_class($this->driver), LockableDriverInterface::class]);
     }
 
     public function unlock(string $resource): bool
     {
         if ($this->driver instanceof LockableDriverInterface) {
             return $this->driver->unlock($this->metadata, $resource);
+        } else {
+            throw new RepositoryException(["%s doesn't implement %s", get_class($this->driver), LockableDriverInterface::class]);
         }
-
-        throw new RepositoryException(["%s doesn't implement %s", get_class($this->driver), LockableDriverInterface::class]);
     }
 
     public function begin(): void
     {
         if ($this->driver instanceof TransactionalDriverInterface) {
             $this->driver->begin();
+        } else {
+            throw new RepositoryException(["%s doesn't implement %s", get_class($this->driver), TransactionalDriverInterface::class]);
         }
-
-        throw new RepositoryException(["%s doesn't implement %s", get_class($this->driver), TransactionalDriverInterface::class]);
     }
 
     public function commit(): void
     {
         if ($this->driver instanceof TransactionalDriverInterface) {
             $this->driver->commit();
+        } else {
+            throw new RepositoryException(["%s doesn't implement %s", get_class($this->driver), TransactionalDriverInterface::class]);
         }
-
-        throw new RepositoryException(["%s doesn't implement %s", get_class($this->driver), TransactionalDriverInterface::class]);
     }
 
     public function rollback(): void
     {
         if ($this->driver instanceof TransactionalDriverInterface) {
             $this->driver->rollback();
+        } else {
+            throw new RepositoryException(["%s doesn't implement %s", get_class($this->driver), TransactionalDriverInterface::class]);
         }
-
-        throw new RepositoryException(["%s doesn't implement %s", get_class($this->driver), TransactionalDriverInterface::class]);
     }
 
     public function getItemId(array $item): array
