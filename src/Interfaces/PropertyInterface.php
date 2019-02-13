@@ -10,8 +10,9 @@ interface PropertyInterface
     const TYPE_BOOL = 'boolean';
     const TYPE_FLOAT = 'double';
     const TYPE_ARRAY = 'array';
-    const TYPE_NUMERIC = 'numeric';
 
     public function getType(): string;
+    public function validate($value): void;
     public function isGenerated(): bool;
+    public function isIdentified(): bool;
 }
