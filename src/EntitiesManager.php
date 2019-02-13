@@ -216,7 +216,7 @@ class EntitiesManager implements EntitiesManagerInterface
     {
         foreach ($items as &$item) {
             if (null !== $item) {
-                $item = $this->proto::unpack($item);
+                $item = $this->proto->unpack($item);
             }
         }
 
