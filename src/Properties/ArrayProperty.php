@@ -11,4 +11,9 @@ class ArrayProperty extends AbstractProperty
     {
         return self::TYPE_ARRAY;
     }
+
+    public function getStubValue()
+    {
+        return [];
+    }
 }

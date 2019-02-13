@@ -9,4 +9,9 @@ class BoolProperty extends AbstractProperty
     {
         return self::TYPE_BOOL;
     }
+
+    public function getStubValue()
+    {
+        return false;
+    }
 }

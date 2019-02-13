@@ -9,4 +9,9 @@ class StrProperty extends AbstractProperty
     {
         return self::TYPE_STR;
     }
+
+    public function getStubValue()
+    {
+        return '';
+    }
 }

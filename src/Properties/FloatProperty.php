@@ -9,4 +9,9 @@ class FloatProperty extends AbstractProperty
     {
         return self::TYPE_FLOAT;
     }
+
+    public function getStubValue()
+    {
+        return 0.0;
+    }
 }

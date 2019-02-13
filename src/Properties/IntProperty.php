@@ -9,4 +9,9 @@ class IntProperty extends AbstractProperty
     {
         return self::TYPE_INT;
     }
+
+    public function getStubValue()
+    {
+        return 0;
+    }
 }
