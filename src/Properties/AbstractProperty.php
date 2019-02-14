@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Ueef\Machina\Properties;
 
-use Ueef\Machina\Errors\PropertyValidationError;
 use Ueef\Machina\Interfaces\PropertyInterface;
+use Ueef\Machina\Exceptions\PropertyValidationException;
 
 abstract class AbstractProperty implements PropertyInterface
 {
@@ -29,12 +29,5 @@ abstract class AbstractProperty implements PropertyInterface
     public function isIdentified(): bool
     {
         return $this->identified;
-    }
-
-    public function validate($value): void
-    {
-        if (gettype($value) !== $this->getType()) {
-            throw new PropertyValidationError(["value must be of the type %s, %s given", gettype($value), $this->getType()]);
-        }
     }
 }
