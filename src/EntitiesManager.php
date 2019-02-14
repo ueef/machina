@@ -132,6 +132,21 @@ class EntitiesManager implements EntitiesManagerInterface
         $this->repository->delete($this->makeFiltersByIds($ids));
     }
 
+    public function reload(EntityInterface &...$entities): void
+    {
+        $ids = [];
+        foreach ($entities as $index => $entity) {
+            $ids[$index] = $this->getEntityId($entity);
+        }
+
+        foreach ($this->findByIds($ids) as $index => $entity) {
+            if (null === $entity) {
+                throw new EntitiesManagerException("cannot find one of entities");
+            }
+            $entities[$index] = $entity;
+        }
+    }
+
     public function refresh(EntityInterface &...$entities): array
     {
         $ids = [];

@@ -17,6 +17,7 @@ interface EntitiesManagerInterface
     public function create(EntityInterface &...$entities): void;
     public function update(EntityInterface &...$entities): void;
     public function delete(EntityInterface &...$entities): void;
+    public function reload(EntityInterface &...$entities): void;
     public function refresh(EntityInterface &...$entities): array;
 
     public function lock(EntityInterface $entity, bool $nowait = false): bool;
