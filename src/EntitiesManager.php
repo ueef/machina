@@ -199,10 +199,6 @@ class EntitiesManager implements EntitiesManagerInterface
         throw new EntitiesManagerException(["item must be type of %s", get_class($this->proto)]);
     }
 
-    /**
-     * @param array|null $item
-     * @return EntityInterface|null
-     */
     private function unpack(?array $item)
     {
         if (null === $item) {
