@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Ueef\Machina;
 
 use Ueef\Machina\Interfaces\EntityInterface;
-use Ueef\Machina\Interfaces\FilterInterface;
 use Ueef\Machina\Interfaces\RepositoryInterface;
 use Ueef\Machina\Interfaces\EntitiesManagerInterface;
 use Ueef\Machina\Exceptions\EntitiesManagerException;
@@ -30,51 +29,22 @@ class EntitiesManager implements EntitiesManagerInterface
 
     public function get(array $filters = [], array $orders = [], int $offset = 0)
     {
-        $items = $this->repository->find($filters, $orders, 1, $offset);
-        $items = $this->unpack($items);
-        if ($items) {
-            return $items[0];
-        }
-
-        return null;
+        return $this->unpack($this->repository->get($filters, $orders, $offset));
     }
 
     public function getById(array $id)
     {
-        $items = $this->repository->find($this->makeFiltersById($this->correctId($id)), [], 1);
-        $items = $this->unpack($items);
-        if ($items) {
-            return $items[0];
-        }
-
-        return null;
+        return $this->unpack($this->repository->getById($id));
     }
 
     public function find(array $filters = [], array $orders = [], int $limit = 0, int $offset = 0): array
     {
-        $items = $this->repository->find($filters, $orders, $limit, $offset);
-        $items = $this->unpack($items);
-
-        return $items;
+        return $this->unpackMany($this->repository->find($filters, $orders, $limit, $offset));
     }
 
     public function findByIds(array $ids): array
     {
-        $items = [];
-        foreach ($ids as $index => $id) {
-            $ids[$index] = $this->correctId($id);
-            $items[$index] = null;
-        }
-
-        foreach ($this->repository->find($this->makeFiltersByIds($ids)) as $item) {
-            $index = array_search($this->repository->getItemId($item), $ids);
-            if (false === $index) {
-                throw new EntitiesManagerException("cannot match a founded item with id");
-            }
-            $items[$index] = $item;
-        }
-
-        return $this->unpack($items);
+        return $this->unpackMany($this->repository->findByIds($ids));
     }
 
     public function count(array $filters = []): int
@@ -84,13 +54,13 @@ class EntitiesManager implements EntitiesManagerInterface
 
     public function insert(EntityInterface ...$entities): void
     {
-        $items = $this->pack($entities);
+        $items = $this->packMany($entities);
         $this->repository->insert($items);
     }
 
     public function create(EntityInterface &...$entities): void
     {
-        $items = $this->pack($entities);
+        $items = $this->packMany($entities);
         $this->repository->insert($items);
 
         $ids = [];
@@ -109,17 +79,22 @@ class EntitiesManager implements EntitiesManagerInterface
     public function update(EntityInterface &...$entities): void
     {
         $ids = [];
-        foreach ($this->pack($entities) as $index => $item) {
+        foreach ($this->packMany($entities) as $index => $item) {
             $ids[$index] = $this->repository->getItemId($item);
-            $this->repository->update($item, $this->makeFiltersById($ids[$index]), [], 1);
+            $this->update($item, $ids[$index]);
         }
 
         foreach ($this->findByIds($ids) as $index => $entity) {
             if (null === $entity) {
-                throw new EntitiesManagerException("cannot find one of entities after update");
+                throw new EntitiesManagerException(["cannot find an entity after update: %s", $ids[$index]]);
             }
             $entities[$index] = $entity;
         }
+    }
+
+    public function updateByIds(array $values, array $ids): void
+    {
+        $this->repository->updateByIds($values, $ids);
     }
 
     public function delete(EntityInterface &...$entities): void
@@ -129,7 +104,12 @@ class EntitiesManager implements EntitiesManagerInterface
             $ids[$index] = $this->getEntityId($entity);
         }
 
-        $this->repository->delete($this->makeFiltersByIds($ids));
+        $this->deleteByIds($ids);
+    }
+
+    public function deleteByIds(array $ids): void
+    {
+        $this->repository->deleteByIds($ids);
     }
 
     public function reload(EntityInterface &...$entities): void
@@ -177,12 +157,12 @@ class EntitiesManager implements EntitiesManagerInterface
 
     public function lockById(array $id, bool $wait = true): bool
     {
-        return $this->repository->lock($this->makeLocking($id), $wait);
+        return $this->repository->lockById($id, $wait);
     }
 
     public function unlockById(array $id): bool
     {
-        return $this->repository->unlock($this->makeLocking($id));
+        return $this->repository->lockById($id);
     }
 
     public function begin(): void
@@ -200,78 +180,51 @@ class EntitiesManager implements EntitiesManagerInterface
         $this->repository->rollback();
     }
 
-    public function getRepository(): RepositoryInterface
-    {
-        return $this->repository;
-    }
-
-    /**
-     * @param EntityInterface[] $entities
-     * @return array[]
-     * @throws EntitiesManagerException
-     */
-    private function pack(array $entities): array
-    {
-        foreach ($entities as &$entity) {
-            if ($entity instanceof $this->proto) {
-                $entity = $entity->pack();
-            } else {
-                throw new EntitiesManagerException(["item must be type of %s", get_class($this->proto)]);
-            }
-        }
-
-        return $entities;
-    }
-
-    /**
-     * @param array[] $items
-     * @return EntityInterface[]
-     */
-    private function unpack(array $items): array
-    {
-        foreach ($items as &$item) {
-            if (null !== $item) {
-                $item = $this->proto->unpack($item);
-            }
-        }
-
-        return $items;
-    }
-
     public function getEntityId(EntityInterface $entity): array
     {
         return $this->repository->getItemId($entity->pack());
     }
 
-    private function makeLocking(array $id): string
+    public function getRepository(): RepositoryInterface
     {
-        return json_encode($this->correctId($id));
+        return $this->repository;
     }
 
-    private function makeFiltersById(array $id)
+    private function pack(EntityInterface $entity): array
     {
-        $filters = [];
-        foreach ($id as $key => $value) {
-            $filters[] = [FilterInterface::EQ, $key, $value];
+        if ($entity instanceof $this->proto) {
+            return $entity->pack();
         }
 
-        return $filters;
+        throw new EntitiesManagerException(["item must be type of %s", get_class($this->proto)]);
     }
 
-    private function makeFiltersByIds(array $ids)
+    private function unpack(?array $item): ?EntityInterface
     {
-        $filters = [];
-        foreach ($ids as $id) {
-            $filters[] = [FilterInterface::AND, $this->makeFiltersById($id)];
+        if (null === $item) {
+            return null;
         }
 
-        return [
-            [FilterInterface::OR, $filters],
-        ];
+        return $this->proto->unpack($item);
     }
 
-    private function correctId(array $id): array
+    private function packMany(array $entities): array
     {
-        return array_replace($this->proto_id, array_intersect_key($id, $this->proto_id));
+        $items = [];
+        foreach ($entities as $index => $entity) {
+            $items[$index] = $this->pack($entity);
+        }
+
+        return $items;
+    }
+
+    private function unpackMany(array $items): array
+    {
+        $entities = [];
+        foreach ($items as $index => $item) {
+            $entities[$index] = $this->unpack($item);
+        }
+
+        return $entities;
     }
 }

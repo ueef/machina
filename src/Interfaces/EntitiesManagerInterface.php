@@ -15,15 +15,20 @@ interface EntitiesManagerInterface
 
     public function insert(EntityInterface ...$entities): void;
     public function create(EntityInterface &...$entities): void;
+
     public function update(EntityInterface &...$entities): void;
+    public function updateByIds(array $values, array $ids): void;
+
     public function delete(EntityInterface &...$entities): void;
+    public function deleteByIds(array $ids): void;
+
     public function reload(EntityInterface &...$entities): void;
     public function refresh(EntityInterface &...$entities): array;
 
-    public function lock(EntityInterface $entity, bool $nowait = false): bool;
+    public function lock(EntityInterface $entity, bool $wait = true): bool;
     public function unlock(EntityInterface $entity): bool;
 
-    public function lockById(array $id, bool $nowait = false): bool;
+    public function lockById(array $id, bool $wait = true): bool;
     public function unlockById(array $id): bool;
 
     public function begin(): void;
@@ -31,6 +36,5 @@ interface EntitiesManagerInterface
     public function rollback(): void;
 
     public function getEntityId(EntityInterface $entity): array;
-
     public function getRepository(): RepositoryInterface;
 }
