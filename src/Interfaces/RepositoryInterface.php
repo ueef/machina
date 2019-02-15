@@ -22,11 +22,11 @@ interface RepositoryInterface
     public function delete(array $filters = [], array $orders = [], int $limit = 0, int $offset = 0): void;
     public function deleteByIds(array $ids): void;
 
-    public function lock(string $resource, bool $wait = true): bool;
-    public function lockById(array $id, bool $wait = false): bool;
+    public function lock(string $resource, ?array &$locked, bool $wait = true): bool;
+    public function unlock(array $locked): void;
 
-    public function unlock(string $resource): bool;
-    public function unlockById(array $id): bool;
+    public function lockById(array $id, ?array &$locked, bool $wait = false): bool;
+    public function unlockById(array $locked): void;
 
     public function begin(): void;
     public function commit(): void;

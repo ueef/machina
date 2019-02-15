@@ -104,59 +104,46 @@ class Repository implements RepositoryInterface
         $this->delete($this->getFiltersByIds($ids));
     }
 
-    public function lock(string $resource, bool $wait = true): bool
+    public function lock(string $resource, ?array &$locked, bool $wait = true): bool
     {
-        if ($this->driver instanceof LockableDriverInterface) {
-            return $this->driver->lock($this->metadata, $resource, $wait);
-        } else {
-            throw new RepositoryException(["%s doesn't implement %s", get_class($this->driver), LockableDriverInterface::class]);
+        if ($this->driver->lock($this->metadata, $resource, $wait)) {
+            $locked[] = $resource;
+            return true;
+        }
+
+        return false;
+    }
+
+    public function unlock(array $locked): void
+    {
+        foreach ($locked as $resource) {
+            $this->driver->unlock($this->metadata, $resource);
         }
     }
 
-    public function lockById(array $id, bool $wait = true): bool
+    public function lockById(array $id, ?array &$locked, bool $wait = true): bool
     {
-        return $this->lock($this->getLocking($id), $wait);
+        return $this->lock(json_encode($this->correctId($id)), $locked, $wait);
     }
 
-    public function unlock(string $resource): bool
+    public function unlockById(array $locked): void
     {
-        if ($this->driver instanceof LockableDriverInterface) {
-            return $this->driver->unlock($this->metadata, $resource);
-        } else {
-            throw new RepositoryException(["%s doesn't implement %s", get_class($this->driver), LockableDriverInterface::class]);
-        }
-    }
-
-    public function unlockById(array $id): bool
-    {
-        return $this->unlock($this->getLocking($id));
+        $this->unlock($locked);
     }
 
     public function begin(): void
     {
-        if ($this->driver instanceof TransactionalDriverInterface) {
-            $this->driver->begin();
-        } else {
-            throw new RepositoryException(["%s doesn't implement %s", get_class($this->driver), TransactionalDriverInterface::class]);
-        }
+        $this->driver->begin();
     }
 
     public function commit(): void
     {
-        if ($this->driver instanceof TransactionalDriverInterface) {
-            $this->driver->commit();
-        } else {
-            throw new RepositoryException(["%s doesn't implement %s", get_class($this->driver), TransactionalDriverInterface::class]);
-        }
+        $this->driver->commit();
     }
 
     public function rollback(): void
     {
-        if ($this->driver instanceof TransactionalDriverInterface) {
-            $this->driver->rollback();
-        } else {
-            throw new RepositoryException(["%s doesn't implement %s", get_class($this->driver), TransactionalDriverInterface::class]);
-        }
+        $this->driver->rollback();
     }
 
     public function getItemId(array $item): array
@@ -177,11 +164,6 @@ class Repository implements RepositoryInterface
     private function correctId(array $id): array
     {
         return array_replace($this->proto_id, array_intersect_key($id, $this->proto_id));
-    }
-
-    private function getLocking(array $id): string
-    {
-        return json_encode($this->correctId($id));
     }
 
     private function getFiltersById(array $id)
