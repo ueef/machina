@@ -26,11 +26,9 @@ interface EntitiesManagerInterface
     public function reload(EntityInterface &...$entities): void;
     public function refresh(EntityInterface &...$entities): array;
 
-    public function lock(EntityInterface $entity, bool $wait = true): bool;
-    public function unlock(EntityInterface $entity): bool;
-
-    public function lockById(array $id, bool $wait = true): bool;
-    public function unlockById(array $id): bool;
+    public function lock(EntityInterface $entity, ?array &$locks, bool $wait = true): bool;
+    public function lockById(array $id, ?array &$locks, bool $wait = true): bool;
+    public function unlock(array $locks): void;
 
     public function begin(): void;
     public function commit(): void;

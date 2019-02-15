@@ -104,14 +104,19 @@ class Repository implements RepositoryInterface
         $this->delete($this->getFiltersByIds($ids));
     }
 
-    public function lock(string $resource, ?array &$locked, bool $wait = true): bool
+    public function lock(string $resource, ?array &$locks, bool $wait = true): bool
     {
         if ($this->driver->lock($this->metadata, $resource, $wait)) {
-            $locked[] = $resource;
+            $locks[] = $resource;
             return true;
         }
 
         return false;
+    }
+
+    public function lockById(array $id, ?array &$locks, bool $wait = true): bool
+    {
+        return $this->lock(json_encode($this->correctId($id)), $locks, $wait);
     }
 
     public function unlock(array $locked): void
@@ -119,16 +124,6 @@ class Repository implements RepositoryInterface
         foreach ($locked as $resource) {
             $this->driver->unlock($this->metadata, $resource);
         }
-    }
-
-    public function lockById(array $id, ?array &$locked, bool $wait = true): bool
-    {
-        return $this->lock(json_encode($this->correctId($id)), $locked, $wait);
-    }
-
-    public function unlockById(array $locked): void
-    {
-        $this->unlock($locked);
     }
 
     public function begin(): void
