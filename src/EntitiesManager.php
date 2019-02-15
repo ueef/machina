@@ -52,6 +52,11 @@ class EntitiesManager implements EntitiesManagerInterface
         return $this->repository->count($filters);
     }
 
+    public function countByIds(array $ids = []): int
+    {
+        return $this->repository->countByIds($ids);
+    }
+
     public function insert(EntityInterface ...$entities): void
     {
         $items = $this->packMany($entities);

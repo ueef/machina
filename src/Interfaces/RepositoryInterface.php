@@ -12,6 +12,7 @@ interface RepositoryInterface
     public function findByIds(array $ids): array;
 
     public function count(array $filters = []): int;
+    public function countByIds(array $ids): int;
 
     public function insert(array &$items): void;
 

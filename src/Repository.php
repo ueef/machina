@@ -74,6 +74,11 @@ class Repository implements RepositoryInterface
         return $this->driver->count($this->metadata, $filters);
     }
 
+    public function countByIds(array $ids): int
+    {
+        return $this->driver->count($this->metadata, $this->getFiltersByIds($ids));
+    }
+
     public function insert(array &$items): void
     {
         $this->driver->insert($this->metadata, $items);

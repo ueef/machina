@@ -12,6 +12,7 @@ interface EntitiesManagerInterface
     public function findByIds(array $ids): array;
 
     public function count(array $filters = []): int;
+    public function countByIds(array $ids): int;
 
     public function insert(EntityInterface ...$entities): void;
     public function create(EntityInterface &...$entities): void;
