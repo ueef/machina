@@ -160,7 +160,7 @@ class EntitiesManager implements EntitiesManagerInterface
         return $this->repository->lockById($id, $locks, $wait);
     }
 
-    public function unlock($locks): void
+    public function unlock(array $locks): void
     {
         $this->repository->unlock($locks);
     }

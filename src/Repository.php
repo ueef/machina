@@ -119,9 +119,9 @@ class Repository implements RepositoryInterface
         return $this->lock(json_encode($this->correctId($id)), $locks, $wait);
     }
 
-    public function unlock(array $locked): void
+    public function unlock(array $locks): void
     {
-        foreach ($locked as $resource) {
+        foreach ($locks as $resource) {
             $this->driver->unlock($this->metadata, $resource);
         }
     }
