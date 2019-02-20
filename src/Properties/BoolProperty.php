@@ -15,7 +15,7 @@ class BoolProperty extends AbstractProperty
     public function validate($value): void
     {
         if (!is_bool($value)) {
-            throw new PropertyValidationException(["value must be the type of string, %s given", gettype($value)]);
+            throw new PropertyValidationException(["value must be the type of boolean, %s given", gettype($value)]);
         }
     }
 

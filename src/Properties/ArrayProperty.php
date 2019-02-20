@@ -15,7 +15,7 @@ class ArrayProperty extends AbstractProperty
     public function validate($value): void
     {
         if (!is_array($value)) {
-            throw new PropertyValidationException(["value must be the type of string, %s given", gettype($value)]);
+            throw new PropertyValidationException(["value must be the type of array, %s given", gettype($value)]);
         }
     }
 

@@ -15,7 +15,7 @@ class FloatProperty extends AbstractProperty
     public function validate($value): void
     {
         if (!is_float($value)) {
-            throw new PropertyValidationException(["value must be the type of string, %s given", gettype($value)]);
+            throw new PropertyValidationException(["value must be the type of double, %s given", gettype($value)]);
         }
     }
 
