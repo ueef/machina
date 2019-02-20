@@ -87,7 +87,7 @@ class EntitiesManager implements EntitiesManagerInterface
         $ids = [];
         foreach ($this->packMany($entities) as $index => $item) {
             $ids[$index] = $this->repository->getItemId($item);
-            $this->update($item, $ids[$index]);
+            $this->updateByIds($item, $ids[$index]);
         }
 
         foreach ($this->findByIds($ids) as $index => $entity) {
