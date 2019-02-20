@@ -27,6 +27,7 @@ class EntitiesManager implements EntitiesManagerInterface
         $this->proto_id = $this->getEntityId($proto);
     }
 
+
     public function get(array $filters = [], array $orders = [], int $offset = 0)
     {
         return $this->unpack($this->repository->get($filters, $orders, $offset));
@@ -115,6 +116,16 @@ class EntitiesManager implements EntitiesManagerInterface
     public function deleteByIds(array $ids): void
     {
         $this->repository->deleteByIds($ids);
+    }
+
+    public function has(EntityInterface ...$entities): bool
+    {
+        $ids = [];
+        foreach ($entities as $entity) {
+            $ids[] = $this->getEntityId($entity);
+        }
+
+        return count($entities) == $this->countByIds($ids);
     }
 
     public function reload(EntityInterface &...$entities): void

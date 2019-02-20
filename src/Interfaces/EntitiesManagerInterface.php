@@ -23,6 +23,7 @@ interface EntitiesManagerInterface
     public function delete(EntityInterface &...$entities): void;
     public function deleteByIds(array $ids): void;
 
+    public function has(EntityInterface ...$entities): bool;
     public function reload(EntityInterface &...$entities): void;
     public function refresh(EntityInterface &...$entities): array;
 
