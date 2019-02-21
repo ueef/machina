@@ -8,8 +8,6 @@ use Ueef\Machina\Interfaces\DriverInterface;
 use Ueef\Machina\Interfaces\FilterInterface;
 use Ueef\Machina\Interfaces\MetadataInterface;
 use Ueef\Machina\Interfaces\RepositoryInterface;
-use Ueef\Machina\Interfaces\LockableDriverInterface;
-use Ueef\Machina\Interfaces\TransactionalDriverInterface;
 
 class Repository implements RepositoryInterface
 {
@@ -116,7 +114,12 @@ class Repository implements RepositoryInterface
 
     public function lockById(array $id, ?array &$locks, bool $wait = true): bool
     {
-        return $this->lock(json_encode($this->correctId($id)), $locks, $wait);
+        return $this->lockByKey($this->correctId($id), $locks, $wait);
+    }
+
+    public function lockByKey(array $key, ?array &$locks, bool $wait = true): bool
+    {
+        return $this->lock(json_encode($key), $locks, $wait);
     }
 
     public function unlock(array $locks): void

@@ -24,6 +24,7 @@ interface RepositoryInterface
 
     public function lock(string $resource, ?array &$locks, bool $wait = true): bool;
     public function lockById(array $id, ?array &$locks, bool $wait = true): bool;
+    public function lockByKey(array $key, ?array &$locks, bool $wait = true): bool;
     public function unlock(array $locks): void;
 
     public function getItemId(array $item): array;

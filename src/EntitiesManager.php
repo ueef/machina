@@ -169,7 +169,14 @@ class EntitiesManager implements EntitiesManagerInterface
     public function lockById(array $id, ?array &$locks, bool $wait = true): void
     {
         if (!$this->repository->lockById($id, $locks, $wait)) {
-            throw new EntitiesManagerException(["cannot lock entity: %s", $id]);
+            throw new EntitiesManagerException(["cannot lock entity by id: %s", $id]);
+        }
+    }
+
+    public function lockByKey(array $key, ?array &$locks, bool $wait = true): void
+    {
+        if (!$this->repository->lockByKey($key, $locks, $wait)) {
+            throw new EntitiesManagerException(["cannot lock entity by key: %s", $key]);
         }
     }
 

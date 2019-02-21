@@ -29,6 +29,7 @@ interface EntitiesManagerInterface
 
     public function lock(EntityInterface $entity, ?array &$locks, bool $wait = true): void;
     public function lockById(array $id, ?array &$locks, bool $wait = true): void;
+    public function lockByKey(array $key, ?array &$locks, bool $wait = true): void;
     public function unlock(array $locks): void;
 
     public function getEntityId(EntityInterface $entity): array;
