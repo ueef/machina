@@ -161,14 +161,16 @@ class EntitiesManager implements EntitiesManagerInterface
         return $_entities;
     }
 
-    public function lock(EntityInterface $entity, ?array &$locks, bool $wait = true): bool
+    public function lock(EntityInterface $entity, ?array &$locks, bool $wait = true): void
     {
-        return $this->lockById($this->getEntityId($entity), $locks, $wait);
+        $this->lockById($this->getEntityId($entity), $locks, $wait);
     }
 
-    public function lockById(array $id, ?array &$locks, bool $wait = true): bool
+    public function lockById(array $id, ?array &$locks, bool $wait = true): void
     {
-        return $this->repository->lockById($id, $locks, $wait);
+        if (!$this->repository->lockById($id, $locks, $wait)) {
+            throw new EntitiesManagerException(["cannot lock entity: %s", $id]);
+        }
     }
 
     public function unlock(array $locks): void
