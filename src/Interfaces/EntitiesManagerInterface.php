@@ -31,10 +31,6 @@ interface EntitiesManagerInterface
     public function lockById(array $id, ?array &$locks, bool $wait = true): void;
     public function unlock(array $locks): void;
 
-    public function begin(): void;
-    public function commit(): void;
-    public function rollback(): void;
-
     public function getEntityId(EntityInterface $entity): array;
     public function getRepository(): RepositoryInterface;
 }

@@ -26,10 +26,6 @@ interface RepositoryInterface
     public function lockById(array $id, ?array &$locks, bool $wait = true): bool;
     public function unlock(array $locks): void;
 
-    public function begin(): void;
-    public function commit(): void;
-    public function rollback(): void;
-
     public function getItemId(array $item): array;
 
     public function getMetadata(): MetadataInterface;

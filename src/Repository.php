@@ -126,21 +126,6 @@ class Repository implements RepositoryInterface
         }
     }
 
-    public function begin(): void
-    {
-        $this->driver->begin();
-    }
-
-    public function commit(): void
-    {
-        $this->driver->commit();
-    }
-
-    public function rollback(): void
-    {
-        $this->driver->rollback();
-    }
-
     public function getItemId(array $item): array
     {
         $id = [];

@@ -178,21 +178,6 @@ class EntitiesManager implements EntitiesManagerInterface
         $this->repository->unlock($locks);
     }
 
-    public function begin(): void
-    {
-        $this->repository->begin();
-    }
-
-    public function commit(): void
-    {
-        $this->repository->commit();
-    }
-
-    public function rollback(): void
-    {
-        $this->repository->rollback();
-    }
-
     public function getEntityId(EntityInterface $entity): array
     {
         return $this->repository->getItemId($entity->pack());
