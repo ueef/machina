@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Ueef\Machina;
 
-use Ueef\Machina\Exceptions\RepositoryException;
+use Ueef\Machina\Exceptions\CannotLockException;
 use Ueef\Machina\Interfaces\DriverInterface;
 use Ueef\Machina\Interfaces\FilterInterface;
 use Ueef\Machina\Interfaces\MetadataInterface;
@@ -17,15 +17,11 @@ class Repository implements RepositoryInterface
     /** @var MetadataInterface */
     private $metadata;
 
-    /** @var array */
-    private $proto_id;
-
 
     public function __construct(DriverInterface $driver, MetadataInterface $metadata)
     {
         $this->driver = $driver;
         $this->metadata = $metadata;
-        $this->proto_id = $this->getItemId([]);
     }
 
     public function get(array $filters = [], array $orders = [], int $offset = 0): ?array
@@ -38,9 +34,14 @@ class Repository implements RepositoryInterface
         return null;
     }
 
-    public function getById(array $id): ?array
+    public function getByKey(array $key): ?array
     {
-        return $this->get($this->getFiltersById($id));
+        $items = $this->get($this->makeFiltersByKey($key));
+        if ($items) {
+            return $items[0];
+        }
+
+        return null;
     }
 
     public function find(array $filters = [], array $orders = [], int $limit = 0, int $offset = 0): array
@@ -48,23 +49,9 @@ class Repository implements RepositoryInterface
         return $this->driver->find($this->metadata, $filters, $orders, $limit, $offset);
     }
 
-    public function findByIds(array $ids): array
+    public function findByKey(array ...$keys): array
     {
-        $items = [];
-        foreach ($ids as $index => $id) {
-            $ids[$index] = $this->correctId($id);
-            $items[$index] = null;
-        }
-
-        foreach ($this->find($this->getFiltersByIds($ids)) as $item) {
-            $index = array_search($this->getItemId($item), $ids);
-            if (false === $index) {
-                throw new RepositoryException("cannot match a founded item by id");
-            }
-            $items[$index] = $item;
-        }
-
-        return $items;
+        return $this->combineKeysWithItems($this->find($this->makeFiltersByKey(...$keys)), $keys);
     }
 
     public function count(array $filters = []): int
@@ -72,9 +59,9 @@ class Repository implements RepositoryInterface
         return $this->driver->count($this->metadata, $filters);
     }
 
-    public function countByIds(array $ids): int
+    public function countByKey(array ...$keys): int
     {
-        return $this->driver->count($this->metadata, $this->getFiltersByIds($ids));
+        return $this->driver->count($this->metadata, $this->makeFiltersByKey(...$keys));
     }
 
     public function insert(array &$items): void
@@ -87,9 +74,9 @@ class Repository implements RepositoryInterface
         $this->driver->update($this->metadata, $values, $filters, $orders, $limit, $offset);
     }
 
-    public function updateByIds(array $values, array $ids): void
+    public function updateByKey(array $values, array ...$keys): void
     {
-        $this->update($values, $this->getFiltersByIds($ids));
+        $this->update($values, $this->makeFiltersByKey(...$keys));
     }
 
     public function delete(array $filters = [], array $orders = [], int $limit = 0, int $offset = 0): void
@@ -97,29 +84,19 @@ class Repository implements RepositoryInterface
         $this->driver->delete($this->metadata, $filters, $orders, $limit, $offset);
     }
 
-    public function deleteByIds(array $ids): void
+    public function deleteByKey(array ...$keys): void
     {
-        $this->delete($this->getFiltersByIds($ids));
+        $this->delete($this->makeFiltersByKey(...$keys));
     }
 
-    public function lock(string $resource, ?array &$locks, bool $wait = true): bool
+    public function lock(array $key, array &$locks, bool $wait = true): void
     {
+        $resource = json_encode($key);
         if ($this->driver->lock($this->metadata, $resource, $wait)) {
             $locks[] = $resource;
-            return true;
+        } else {
+            throw new CannotLockException(["cannot lock item by key: %s", $key]);
         }
-
-        return false;
-    }
-
-    public function lockById(array $id, ?array &$locks, bool $wait = true): bool
-    {
-        return $this->lockByKey($this->correctId($id), $locks, $wait);
-    }
-
-    public function lockByKey(array $key, ?array &$locks, bool $wait = true): bool
-    {
-        return $this->lock(json_encode($key), $locks, $wait);
     }
 
     public function unlock(array $locks): void
@@ -129,14 +106,9 @@ class Repository implements RepositoryInterface
         }
     }
 
-    public function getItemId(array $item): array
+    public function getDriver(): DriverInterface
     {
-        $id = [];
-        foreach ($this->metadata->getIdentifiedProperties() as $key => $property) {
-            $id[$key] = $item[$key] ?? null;
-        }
-
-        return $id;
+        return $this->driver;
     }
 
     public function getMetadata(): MetadataInterface
@@ -144,26 +116,41 @@ class Repository implements RepositoryInterface
         return $this->metadata;
     }
 
-    private function correctId(array $id): array
+    private function compareKeyWithItem(array $key, array $item): bool
     {
-        return array_replace($this->proto_id, array_intersect_key($id, $this->proto_id));
-    }
-
-    private function getFiltersById(array $id)
-    {
-        $filters = [];
-        foreach ($id as $key => $value) {
-            $filters[] = [FilterInterface::EQ, $key, $value];
+        foreach ($key as $k => $v) {
+            if (!isset($item[$k]) || $key[$k] !== $item[$k]) {
+                return false;
+            }
         }
 
-        return $filters;
+        return true;
     }
 
-    private function getFiltersByIds(array $ids)
+    private function combineKeysWithItems(array $items, array $keys): array
+    {
+        $r = [];
+        foreach ($keys as $i => $key) {
+            $r[$i] = null;
+            foreach ($items as $_i => $item) {
+                if ($this->compareKeyWithItem($key, $item)) {
+                    $r[$i] = $item;
+                }
+            }
+        }
+
+        return $r;
+    }
+
+    private function makeFiltersByKey(array ...$keys): array
     {
         $filters = [];
-        foreach ($ids as $id) {
-            $filters[] = [FilterInterface::AND, $this->getFiltersById($id)];
+        foreach ($keys as $key) {
+            $keyFilters = [];
+            foreach ($key as $index => $value) {
+                $keyFilters[] = [FilterInterface::EQ, $index, $value];
+            }
+            $filters[] = [FilterInterface::AND, $keyFilters];
         }
 
         return [
