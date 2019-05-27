@@ -90,8 +90,12 @@ class Repository implements RepositoryInterface
         $this->delete($this->makeFiltersByKey(...$keys));
     }
 
-    public function lock(array &$locks, bool $wait, array ...$keys): void
+    public function lock(?array &$locks, bool $wait, array ...$keys): void
     {
+        if (null === $locks) {
+            $locks = [];
+        }
+
         foreach ($keys as $key) {
             $lock = json_encode($key);
             if ($this->driver->lock($this->metadata, $lock, $wait)) {

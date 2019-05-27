@@ -106,14 +106,14 @@ interface ManagerInterface
      * @param bool $wait
      * @param object ...$entities
      */
-    public function lock(array &$locks, bool $wait, object ...$entities): void;
+    public function lock(?array &$locks, bool $wait, object ...$entities): void;
 
     /**
      * @param array $locks
      * @param bool $wait
      * @param array ...$keys
      */
-    public function lockByKey(array &$locks, bool $wait, array ...$keys): void;
+    public function lockByKey(?array &$locks, bool $wait, array ...$keys): void;
 
     /**
      * @param array $locks

@@ -134,7 +134,7 @@ abstract class AbstractManager implements ManagerInterface
         $this->getRepository()->deleteByKey($keys);
     }
 
-    public function lock(array &$locks, bool $wait, object ...$entities): void
+    public function lock(?array &$locks, bool $wait, object ...$entities): void
     {
         $keys = [];
         foreach ($entities as $entity) {
@@ -144,7 +144,7 @@ abstract class AbstractManager implements ManagerInterface
         $this->getRepository()->lock($locks, $wait, $keys);
     }
 
-    public function lockByKey(array &$locks, bool $wait, array ...$keys): void
+    public function lockByKey(?array &$locks, bool $wait, array ...$keys): void
     {
         $this->getRepository()->lock($locks, $wait, $keys);
     }
