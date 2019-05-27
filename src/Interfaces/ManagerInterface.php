@@ -42,7 +42,7 @@ interface ManagerInterface
 
     /**
      * @param array ...$keys
-     * @return object|null[]
+     * @return object[]
      */
     public function findByKey(array ...$keys): array;
 
