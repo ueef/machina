@@ -14,6 +14,5 @@ interface PropertyInterface
     public function getType(): string;
     public function validate($value): void;
     public function isGenerated(): bool;
-    public function isIdentified(): bool;
     public function getStubValue();
 }

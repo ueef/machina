@@ -24,9 +24,6 @@ class Metadata implements MetadataInterface
     /** @var PropertyInterface[] */
     private $generated_properties = [];
 
-    /** @var PropertyInterface[] */
-    private $identified_properties = [];
-
 
     public function __construct(string $source, array $properties, string $generationStrategy = self::GENERATION_STRATEGY_AUTO, ?GeneratorInterface $generator = null)
     {
@@ -38,9 +35,6 @@ class Metadata implements MetadataInterface
             $this->properties[$key] = $property;
             if ($property->isGenerated()) {
                 $this->generated_properties[$key] = $property;
-            }
-            if ($property->isIdentified()) {
-                $this->identified_properties[$key] = $property;
             }
         }
     }
@@ -64,14 +58,6 @@ class Metadata implements MetadataInterface
     public function getGeneratedProperties(): array
     {
         return $this->generated_properties;
-    }
-
-    /**
-     * @return PropertyInterface[]
-     */
-    public function getIdentifiedProperties(): array
-    {
-        return $this->identified_properties;
     }
 
     public function getGenerator(): ?GeneratorInterface

@@ -25,9 +25,4 @@ abstract class AbstractProperty implements PropertyInterface
     {
         return $this->generated;
     }
-
-    public function isIdentified(): bool
-    {
-        return $this->identified;
-    }
 }
