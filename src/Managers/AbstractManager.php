@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Ueef\Machina\Managers;
 
 use Ueef\Machina\Interfaces\ManagerInterface;
-use Ueef\Machina\Exceptions\EntitiesManagerException;
+use Ueef\Machina\Exceptions\ManagerException;
 
 abstract class AbstractManager implements ManagerInterface
 {
@@ -100,7 +100,7 @@ abstract class AbstractManager implements ManagerInterface
 
         $entities = $this->unpackMany($items);
         if (!$this->reload($entities)) {
-            throw new EntitiesManagerException("cannot find some entities after insert");
+            throw new ManagerException("cannot find some entities after insert");
         }
     }
 
@@ -111,7 +111,7 @@ abstract class AbstractManager implements ManagerInterface
         }
 
         if (!$this->reload($entities)) {
-            throw new EntitiesManagerException("cannot find some entities after update");
+            throw new ManagerException("cannot find some entities after update");
         }
     }
 
