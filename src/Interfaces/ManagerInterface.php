@@ -60,15 +60,14 @@ interface ManagerInterface
 
     /**
      * @param object ...$entities
-     * @return bool
      */
-    public function reload(object &...$entities): bool;
+    public function reload(object &...$entities): void;
 
     /**
      * @param object ...$entities
-     * @return int
+     * @return bool
      */
-    public function refresh(object &...$entities): int;
+    public function refresh(object &...$entities): bool;
 
     /**
      * @param object ...$entities

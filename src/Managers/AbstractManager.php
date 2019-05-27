@@ -62,12 +62,14 @@ abstract class AbstractManager implements ManagerInterface
         return $this->getRepository()->countByKey($keys);
     }
 
-    public function reload(object &...$entities): bool
+    public function reload(object &...$entities): void
     {
-        return count($entities) == $this->refresh($entities);
+        if (count($entities) != $this->refresh($entities)) {
+            throw new ManagerException("cannot find some of the entities");
+        }
     }
 
-    public function refresh(object &...$entities): int
+    public function refresh(object &...$entities): bool
     {
         $keys = [];
         foreach ($entities as $index => $entity) {
@@ -80,10 +82,11 @@ abstract class AbstractManager implements ManagerInterface
             if (false !== $index) {
                 $entities[$index] = $entity;
                 $n++;
+                unset($keys[$index]);
             }
         }
 
-        return $n;
+        return count($entities) == $n;
     }
 
     public function insert(object ...$entities): void
@@ -98,7 +101,8 @@ abstract class AbstractManager implements ManagerInterface
         $this->getRepository()->insert($items);
 
         $entities = $this->unpackMany($items);
-        if (!$this->reload($entities)) {
+
+        if (!$this->refresh($entities)) {
             throw new ManagerException("cannot find some entities after insert");
         }
     }
@@ -109,7 +113,7 @@ abstract class AbstractManager implements ManagerInterface
             $this->getRepository()->updateByKey($this->pack($entity), $this->extractPrimaryKey($entity));
         }
 
-        if (!$this->reload($entities)) {
+        if (!$this->refresh($entities)) {
             throw new ManagerException("cannot find some entities after update");
         }
     }
