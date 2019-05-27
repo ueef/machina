@@ -102,23 +102,23 @@ interface ManagerInterface
     public function deleteByKey(array ...$keys): void;
 
     /**
-     * @param object $entity
      * @param array $locks
      * @param bool $wait
+     * @param object ...$entities
      */
-    public function lock(object $entity, array &$locks, bool $wait = true): void;
-
-    /**
-     * @param array $key
-     * @param array $locks
-     * @param bool $wait
-     */
-    public function lockByKey(array $key, array &$locks, bool $wait = true): void;
+    public function lock(array &$locks, bool $wait, object ...$entities): void;
 
     /**
      * @param array $locks
+     * @param bool $wait
+     * @param array ...$keys
      */
-    public function unlock(array $locks): void;
+    public function lockByKey(array &$locks, bool $wait, array ...$keys): void;
+
+    /**
+     * @param array $locks
+     */
+    public function unlock(array &$locks): void;
 
     /**
      * @return RepositoryInterface

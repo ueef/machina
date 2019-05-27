@@ -22,8 +22,8 @@ interface RepositoryInterface {
     public function delete(array $filters = [], array $orders = [], int $limit = 0, int $offset = 0): void;
     public function deleteByKey(array ...$keys): void;
 
-    public function lock(array $key, array &$locks, bool $wait = true): void;
-    public function unlock(array $locks): void;
+    public function lock(array &$locks, bool $wait, array ...$keys): void;
+    public function unlock(array &$locks): void;
 
     public function getDriver(): DriverInterface;
     public function getMetadata(): MetadataInterface;

@@ -3,11 +3,12 @@ declare(strict_types=1);
 
 namespace Ueef\Machina;
 
-use Ueef\Machina\Exceptions\CannotLockException;
 use Ueef\Machina\Interfaces\DriverInterface;
 use Ueef\Machina\Interfaces\FilterInterface;
 use Ueef\Machina\Interfaces\MetadataInterface;
 use Ueef\Machina\Interfaces\RepositoryInterface;
+use Ueef\Machina\Exceptions\CannotLockException;
+use Ueef\Machina\Exceptions\CannotUnlockException;
 
 class Repository implements RepositoryInterface
 {
@@ -51,7 +52,7 @@ class Repository implements RepositoryInterface
 
     public function findByKey(array ...$keys): array
     {
-        return $this->combineKeysWithItems($this->find($this->makeFiltersByKey(...$keys)), $keys);
+        return $this->find($this->makeFiltersByKey(...$keys));
     }
 
     public function count(array $filters = []): int
@@ -89,20 +90,28 @@ class Repository implements RepositoryInterface
         $this->delete($this->makeFiltersByKey(...$keys));
     }
 
-    public function lock(array $key, array &$locks, bool $wait = true): void
+    public function lock(array &$locks, bool $wait, array ...$keys): void
     {
-        $resource = json_encode($key);
-        if ($this->driver->lock($this->metadata, $resource, $wait)) {
-            $locks[] = $resource;
-        } else {
-            throw new CannotLockException(["cannot lock item by key: %s", $key]);
+        foreach ($keys as $key) {
+            $lock = json_encode($key);
+            if ($this->driver->lock($this->metadata, $lock, $wait)) {
+                $locks[] = $lock;
+            } else {
+                $this->unlock($locks);
+                throw new CannotLockException(["cannot lock item by key %s", $key]);
+            }
         }
     }
 
-    public function unlock(array $locks): void
+    public function unlock(array &$locks): void
     {
-        foreach ($locks as $resource) {
-            $this->driver->unlock($this->metadata, $resource);
+        while ($locks) {
+            $lock = reset($locks);
+            if ($this->driver->unlock($this->metadata, $lock)) {
+                array_shift($locks);
+            } else {
+                throw new CannotUnlockException(["cannot unlock item by key: %s", $lock]);
+            }
         }
     }
 
@@ -114,32 +123,6 @@ class Repository implements RepositoryInterface
     public function getMetadata(): MetadataInterface
     {
         return $this->metadata;
-    }
-
-    private function compareKeyWithItem(array $key, array $item): bool
-    {
-        foreach ($key as $k => $v) {
-            if (!isset($item[$k]) || $key[$k] !== $item[$k]) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private function combineKeysWithItems(array $items, array $keys): array
-    {
-        $r = [];
-        foreach ($keys as $i => $key) {
-            $r[$i] = null;
-            foreach ($items as $_i => $item) {
-                if ($this->compareKeyWithItem($key, $item)) {
-                    $r[$i] = $item;
-                }
-            }
-        }
-
-        return $r;
     }
 
     private function makeFiltersByKey(array ...$keys): array

@@ -70,18 +70,17 @@ abstract class AbstractManager implements ManagerInterface
     public function refresh(object &...$entities): int
     {
         $keys = [];
-        foreach ($entities as $i => $entity) {
-            $keys[$i] = $this->extractPrimaryKey($entity);
+        foreach ($entities as $index => $entity) {
+            $keys[$index] = $this->extractPrimaryKey($entity);
         }
 
         $n = 0;
-        foreach ($this->findByKey($keys) as $i => $entity) {
-            if (null === $entity) {
-                continue;
+        foreach ($this->findByKey($keys) as $entity) {
+            $index = array_search($this->extractPrimaryKey($entity), $keys);
+            if (false !== $index) {
+                $entities[$index] = $entity;
+                $n++;
             }
-
-            $entities[$i] = $entity;
-            $n++;
         }
 
         return $n;
@@ -135,17 +134,22 @@ abstract class AbstractManager implements ManagerInterface
         $this->getRepository()->deleteByKey($keys);
     }
 
-    public function lock(object $entity, array &$locks, bool $wait = true): void
+    public function lock(array &$locks, bool $wait, object ...$entities): void
     {
-        $this->getRepository()->lock($this->extractPrimaryKey($entity), $locks, $wait);
+        $keys = [];
+        foreach ($entities as $entity) {
+            $keys[] = $this->extractPrimaryKey($entity);
+        }
+
+        $this->getRepository()->lock($locks, $wait, $keys);
     }
 
-    public function lockByKey(array $key, array &$locks, bool $wait = true): void
+    public function lockByKey(array &$locks, bool $wait, array ...$keys): void
     {
-        $this->getRepository()->lock($key, $locks, $wait);
+        $this->getRepository()->lock($locks, $wait, $keys);
     }
 
-    public function unlock(array $locks): void
+    public function unlock(array &$locks): void
     {
         $this->getRepository()->unlock($locks);
     }
