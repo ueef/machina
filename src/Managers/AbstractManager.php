@@ -8,7 +8,7 @@ use Ueef\Machina\Exceptions\EntitiesManagerException;
 
 abstract class AbstractManager implements ManagerInterface
 {
-    public function has(...$entities): bool
+    public function has(object ...$entities): bool
     {
         $keys = [];
         foreach ($entities as $entity) {
@@ -62,12 +62,12 @@ abstract class AbstractManager implements ManagerInterface
         return $this->getRepository()->countByKey($keys);
     }
 
-    public function reload(&...$entities): bool
+    public function reload(object &...$entities): bool
     {
         return count($entities) == $this->refresh($entities);
     }
 
-    public function refresh(&...$entities): int
+    public function refresh(object &...$entities): int
     {
         $keys = [];
         foreach ($entities as $i => $entity) {
@@ -87,13 +87,13 @@ abstract class AbstractManager implements ManagerInterface
         return $n;
     }
 
-    public function insert(...$entities): void
+    public function insert(object ...$entities): void
     {
         $items = $this->packMany($entities);
         $this->getRepository()->insert($items);
     }
 
-    public function create(&...$entities): void
+    public function create(object &...$entities): void
     {
         $items = $this->packMany($entities);
         $this->getRepository()->insert($items);
@@ -104,7 +104,7 @@ abstract class AbstractManager implements ManagerInterface
         }
     }
 
-    public function update(&...$entities): void
+    public function update(object &...$entities): void
     {
         foreach ($entities as &$entity) {
             $this->getRepository()->updateByKey($this->pack($entity), $this->extractPrimaryKey($entity));
@@ -120,7 +120,7 @@ abstract class AbstractManager implements ManagerInterface
         $this->getRepository()->updateByKey($values, ...$keys);
     }
 
-    public function delete(...$entities): void
+    public function delete(object ...$entities): void
     {
         $keys = [];
         foreach ($entities as $index => $entity) {
@@ -135,7 +135,7 @@ abstract class AbstractManager implements ManagerInterface
         $this->getRepository()->deleteByKey($keys);
     }
 
-    public function lock($entity, array &$locks, bool $wait = true): void
+    public function lock(object $entity, array &$locks, bool $wait = true): void
     {
         $this->getRepository()->lock($this->extractPrimaryKey($entity), $locks, $wait);
     }
@@ -170,7 +170,7 @@ abstract class AbstractManager implements ManagerInterface
         return $entities;
     }
 
-    abstract protected function pack($entity): array;
-    abstract protected function unpack(?array $item): array;
-    abstract protected function extractPrimaryKey($entity): array;
+    abstract protected function pack(object $entity): array;
+    abstract protected function unpack(?array $item);
+    abstract protected function extractPrimaryKey(object $entity): array;
 }

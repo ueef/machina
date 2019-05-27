@@ -9,7 +9,7 @@ interface ManagerInterface
      * @param object ...$entities
      * @return bool
      */
-    public function has(...$entities): bool;
+    public function has(object ...$entities): bool;
 
     /**
      * @param array ...$keys
@@ -27,7 +27,7 @@ interface ManagerInterface
 
     /**
      * @param array $key
-     * @return mixed
+     * @return object
      */
     public function getByKey(array $key);
 
@@ -42,7 +42,7 @@ interface ManagerInterface
 
     /**
      * @param array ...$keys
-     * @return object[]
+     * @return object|null[]
      */
     public function findByKey(array ...$keys): array;
 
@@ -62,28 +62,28 @@ interface ManagerInterface
      * @param object ...$entities
      * @return bool
      */
-    public function reload(&...$entities): bool;
+    public function reload(object &...$entities): bool;
 
     /**
      * @param object ...$entities
      * @return int
      */
-    public function refresh(&...$entities): int;
+    public function refresh(object &...$entities): int;
 
     /**
      * @param object ...$entities
      */
-    public function insert(...$entities): void;
+    public function insert(object ...$entities): void;
 
     /**
      * @param object ...$entities
      */
-    public function create(&...$entities): void;
+    public function create(object &...$entities): void;
 
     /**
      * @param object ...$entities
      */
-    public function update(&...$entities): void;
+    public function update(object &...$entities): void;
 
     /**
      * @param array $values
@@ -94,7 +94,7 @@ interface ManagerInterface
     /**
      * @param object ...$entities
      */
-    public function delete(...$entities): void;
+    public function delete(object ...$entities): void;
 
     /**
      * @param array ...$keys
@@ -102,11 +102,11 @@ interface ManagerInterface
     public function deleteByKey(array ...$keys): void;
 
     /**
-     * @param $entity
+     * @param object $entity
      * @param array $locks
      * @param bool $wait
      */
-    public function lock($entity, array &$locks, bool $wait = true): void;
+    public function lock(object $entity, array &$locks, bool $wait = true): void;
 
     /**
      * @param array $key
