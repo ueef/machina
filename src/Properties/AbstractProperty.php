@@ -11,14 +11,10 @@ abstract class AbstractProperty implements PropertyInterface
     /** @var bool */
     protected $generated;
 
-    /** @var bool */
-    protected $identified;
 
-
-    public function __construct(bool $identified = false, bool $generated = false)
+    public function __construct(bool $generated = false)
     {
         $this->generated = $generated;
-        $this->identified = $identified;
     }
 
     public function isGenerated(): bool
