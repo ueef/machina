@@ -74,7 +74,7 @@ abstract class AbstractManager implements ManagerInterface
         $keys = $this->extractPrimaryKeys($entities);
 
         $n = 0;
-        foreach ($this->findByKey($keys) as $entity) {
+        foreach ($this->findByKey(...$keys) as $entity) {
             $index = array_search($this->extractPrimaryKey($entity), $keys);
             if (false !== $index) {
                 $entities[$index] = $entity;
@@ -164,7 +164,7 @@ abstract class AbstractManager implements ManagerInterface
         return $entities;
     }
 
-    protected function extractPrimaryKeys(object $entities): array
+    protected function extractPrimaryKeys(array $entities): array
     {
         $keys = [];
         foreach ($entities as $i => $entity) {
