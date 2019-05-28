@@ -31,9 +31,9 @@ abstract class AbstractManager implements ManagerInterface
         return $entity;
     }
 
-    public function getByKey(array $key)
+    public function getByKey(array ...$keys)
     {
-        $item = $this->getRepository()->getByKey($key);
+        $item = $this->getRepository()->getByKey(...$keys);
         $entity = $this->unpack($item);
 
         return $entity;
@@ -59,22 +59,19 @@ abstract class AbstractManager implements ManagerInterface
 
     public function countByKey(array ...$keys): int
     {
-        return $this->getRepository()->countByKey($keys);
+        return $this->getRepository()->countByKey(...$keys);
     }
 
     public function reload(object &...$entities): void
     {
-        if (count($entities) != $this->refresh($entities)) {
+        if (count($entities) != $this->refresh(...$entities)) {
             throw new ManagerException("cannot find some of the entities");
         }
     }
 
     public function refresh(object &...$entities): bool
     {
-        $keys = [];
-        foreach ($entities as $index => $entity) {
-            $keys[$index] = $this->extractPrimaryKey($entity);
-        }
+        $keys = $this->extractPrimaryKeys($entities);
 
         $n = 0;
         foreach ($this->findByKey($keys) as $entity) {
@@ -92,17 +89,16 @@ abstract class AbstractManager implements ManagerInterface
     public function insert(object ...$entities): void
     {
         $items = $this->packMany($entities);
-        $this->getRepository()->insert($items);
+        $this->getRepository()->insert(...$items);
     }
 
     public function create(object &...$entities): void
     {
         $items = $this->packMany($entities);
-        $this->getRepository()->insert($items);
+        $this->getRepository()->insert(...$items);
 
         $entities = $this->unpackMany($items);
-
-        if (!$this->refresh($entities)) {
+        if (!$this->refresh(...$entities)) {
             throw new ManagerException("cannot find some entities after insert");
         }
     }
@@ -110,10 +106,10 @@ abstract class AbstractManager implements ManagerInterface
     public function update(object &...$entities): void
     {
         foreach ($entities as &$entity) {
-            $this->getRepository()->updateByKey($this->pack($entity), $this->extractPrimaryKey($entity));
+            $this->updateByKey($this->pack($entity), $this->extractPrimaryKey($entity));
         }
 
-        if (!$this->refresh($entities)) {
+        if (!$this->refresh(...$entities)) {
             throw new ManagerException("cannot find some entities after update");
         }
     }
@@ -125,27 +121,17 @@ abstract class AbstractManager implements ManagerInterface
 
     public function delete(object ...$entities): void
     {
-        $keys = [];
-        foreach ($entities as $index => $entity) {
-            $keys[$index] = $this->extractPrimaryKey($entity);
-        }
-
-        $this->deleteByKey(...$keys);
+        $this->deleteByKey(...$this->extractPrimaryKeys($entities));
     }
 
     public function deleteByKey(array ...$keys): void
     {
-        $this->getRepository()->deleteByKey($keys);
+        $this->getRepository()->deleteByKey(...$keys);
     }
 
     public function lock(?array &$locks, bool $wait, object ...$entities): void
     {
-        $keys = [];
-        foreach ($entities as $entity) {
-            $keys[] = $this->extractPrimaryKey($entity);
-        }
-
-        $this->getRepository()->lock($locks, $wait, $keys);
+        $this->getRepository()->lock($locks, $wait, $this->extractPrimaryKeys($entities));
     }
 
     public function lockByKey(?array &$locks, bool $wait, array ...$keys): void
@@ -176,6 +162,16 @@ abstract class AbstractManager implements ManagerInterface
         }
 
         return $entities;
+    }
+
+    protected function extractPrimaryKeys(object $entities): array
+    {
+        $keys = [];
+        foreach ($entities as $i => $entity) {
+            $keys[$i] = $this->extractPrimaryKey($entity);
+        }
+
+        return $keys;
     }
 
     abstract protected function pack(object $entity): array;

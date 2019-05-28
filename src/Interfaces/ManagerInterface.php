@@ -21,15 +21,15 @@ interface ManagerInterface
      * @param array $filters
      * @param array $orders
      * @param int $offset
-     * @return object
+     * @return object|null
      */
     public function get(array $filters = [], array $orders = [], int $offset = 0);
 
     /**
-     * @param array $key
-     * @return object
+     * @param array ...$keys
+     * @return object|null
      */
-    public function getByKey(array $key);
+    public function getByKey(array ...$keys);
 
     /**
      * @param array $filters

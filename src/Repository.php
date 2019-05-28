@@ -35,9 +35,9 @@ class Repository implements RepositoryInterface
         return null;
     }
 
-    public function getByKey(array $key): ?array
+    public function getByKey(array ...$keys): ?array
     {
-        $items = $this->get($this->makeFiltersByKey($key));
+        $items = $this->get($this->makeFiltersByKey(...$keys));
         if ($items) {
             return $items[0];
         }
@@ -65,7 +65,7 @@ class Repository implements RepositoryInterface
         return $this->driver->count($this->metadata, $this->makeFiltersByKey(...$keys));
     }
 
-    public function insert(array &$items): void
+    public function insert(array &...$items): void
     {
         $this->driver->insert($this->metadata, $items);
     }
