@@ -26,7 +26,7 @@ abstract class AbstractManager implements ManagerInterface
     public function get(array $filters = [], array $orders = [], int $offset = 0)
     {
         $item = $this->getRepository()->get($filters, $orders, $offset);
-        $entity = $this->unpack($item)[0];
+        $entity = $this->unpack($item);
 
         return $entity;
     }
@@ -34,15 +34,15 @@ abstract class AbstractManager implements ManagerInterface
     public function getByKey(array $key)
     {
         $item = $this->getRepository()->getByKey($key);
-        $entities = $this->unpack($item);
+        $entity = $this->unpack($item);
 
-        return $entities[0];
+        return $entity;
     }
 
     public function find(array $filters = [], array $orders = [], int $limit = 0, int $offset = 0): array
     {
         $items = $this->getRepository()->find($filters, $orders, $limit, $offset);
-        $entities = $this->unpack(...$items);
+        $entities = $this->unpackMany($items);
 
         return $entities;
     }
