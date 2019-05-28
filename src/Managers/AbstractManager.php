@@ -97,7 +97,10 @@ abstract class AbstractManager implements ManagerInterface
         $items = $this->packMany($entities);
         $this->getRepository()->insert(...$items);
 
-        $entities = $this->unpackMany($items);
+        foreach ($this->unpackMany($items) as $i => $entity) {
+            $entities[$i] = $entity;
+        }
+
         if (!$this->refresh(...$entities)) {
             throw new ManagerException("cannot find some entities after insert");
         }
@@ -105,7 +108,7 @@ abstract class AbstractManager implements ManagerInterface
 
     public function update(object &...$entities): void
     {
-        foreach ($entities as &$entity) {
+        foreach ($entities as $entity) {
             $this->updateByKey($this->pack($entity), $this->extractPrimaryKey($entity));
         }
 
