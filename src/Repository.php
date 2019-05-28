@@ -37,12 +37,7 @@ class Repository implements RepositoryInterface
 
     public function getByKey(array ...$keys): ?array
     {
-        $items = $this->get($this->makeFiltersByKey(...$keys));
-        if ($items) {
-            return $items[0];
-        }
-
-        return null;
+        return $this->get($this->makeFiltersByKey(...$keys));
     }
 
     public function find(array $filters = [], array $orders = [], int $limit = 0, int $offset = 0): array
