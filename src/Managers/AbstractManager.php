@@ -10,17 +10,12 @@ abstract class AbstractManager implements ManagerInterface
 {
     public function has(object ...$entities): bool
     {
-        $keys = [];
-        foreach ($entities as $entity) {
-            $keys[] = $this->extractPrimaryKey($entity);
-        }
-
-        return $this->hasByKey(...$keys);
+        return $this->hasByKey(...$this->extractPrimaryKeys($entities));
     }
 
     public function hasByKey(array ...$keys): bool
     {
-        return count($keys) == $this->countByKey($keys);
+        return count($keys) == $this->countByKey(...$keys);
     }
 
     public function get(array $filters = [], array $orders = [], int $offset = 0)
