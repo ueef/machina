@@ -3,10 +3,11 @@ declare(strict_types=1);
 
 namespace Ueef\Machina\Managers;
 
+use Ueef\Packer\Interfaces\PackerInterface;
 use Ueef\Machina\Interfaces\ManagerInterface;
 use Ueef\Machina\Exceptions\ManagerException;
 
-abstract class AbstractManager implements ManagerInterface
+abstract class AbstractManager implements ManagerInterface, PackerInterface
 {
     public function has(object ...$entities): bool
     {
@@ -21,25 +22,26 @@ abstract class AbstractManager implements ManagerInterface
     public function get(array $filters = [], array $orders = [], int $offset = 0)
     {
         $item = $this->getRepository()->get($filters, $orders, $offset);
-        $entity = $this->unpack($item);
+        if ($item) {
+            return $this->unpack($item);
+        }
 
-        return $entity;
+        return null;
     }
 
     public function getByKey(array ...$keys)
     {
         $item = $this->getRepository()->getByKey(...$keys);
-        $entity = $this->unpack($item);
+        if ($item) {
+            return $this->unpack($item);
+        }
 
-        return $entity;
+        return null;
     }
 
     public function find(array $filters = [], array $orders = [], int $limit = 0, int $offset = 0): array
     {
-        $items = $this->getRepository()->find($filters, $orders, $limit, $offset);
-        $entities = $this->unpackMany($items);
-
-        return $entities;
+        return $this->unpackMany($this->getRepository()->find($filters, $orders, $limit, $offset));
     }
 
     public function findByKey(array ...$keys): array
@@ -146,7 +148,11 @@ abstract class AbstractManager implements ManagerInterface
     {
         $items = [];
         foreach ($entities as $i => $entity) {
-            $items[$i] = $this->pack($entity);
+            if (null === $entity) {
+                $items[$i] = null;
+            } else {
+                $items[$i] = $this->pack($entity);
+            }
         }
 
         return $items;
@@ -156,7 +162,11 @@ abstract class AbstractManager implements ManagerInterface
     {
         $entities = [];
         foreach ($items as $i => $item) {
-            $entities[$i] = $this->unpack($item);
+            if (null === $item) {
+                $entities[$i] = null;
+            } else {
+                $entities[$i] = $this->unpack($item);
+            }
         }
 
         return $entities;
@@ -172,7 +182,5 @@ abstract class AbstractManager implements ManagerInterface
         return $keys;
     }
 
-    abstract protected function pack(object $entity): array;
-    abstract protected function unpack(?array $item);
     abstract protected function extractPrimaryKey(object $entity): array;
 }

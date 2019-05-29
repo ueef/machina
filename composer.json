@@ -12,7 +12,8 @@
   "require": {
     "php": ">=7.2",
     "ext-json": "*",
-    "ueef/encoder": "^0.1.0"
+    "ueef/encoder": "^0.1.0",
+    "ueef/packer": "^0.0.2"
   },
   "autoload": {
     "psr-4": {
