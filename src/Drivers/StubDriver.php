@@ -21,7 +21,7 @@ class StubDriver implements DriverInterface
     private $transactions = [];
 
 
-    public function __construct(array $data)
+    public function __construct(array $data = [])
     {
         foreach ($data as $source => $rows) {
             $this->setRows($source, $rows);
@@ -176,10 +176,6 @@ class StubDriver implements DriverInterface
 
     private function setRows(string $source, array $rows): void
     {
-        if (!isset($this->data[$source])) {
-            throw new DriverException(["source \"%s\" doesn't exist", $source]);
-        }
-
         $this->data[$source] = array_values($rows);
     }
 
