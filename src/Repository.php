@@ -91,42 +91,46 @@ class Repository implements RepositoryInterface
             $locks = [];
         }
 
+        $_locks = [];
         foreach ($keys as $key) {
-            $lock = json_encode($key);
-            if ($this->driver->lock($this->metadata, $lock, $wait)) {
-                $locks[] = $lock;
+            $resource = json_encode($key);
+            if ($this->driver->lock($this->metadata, $resource, $wait)) {
+                $_locks[] = $resource;
             } else {
-                $this->unlock($locks);
+                $this->unlock($_locks);
                 throw new CannotLockException(["cannot lock item by key %s", $key]);
             }
+        }
+
+        foreach ($_locks as $resource) {
+            $locks[] = $resource;
         }
     }
 
     public function unlock(array &$locks): void
     {
         while ($locks) {
-            $lock = reset($locks);
-            if ($this->driver->unlock($this->metadata, $lock)) {
-                array_shift($locks);
-            } else {
-                throw new CannotUnlockException(["cannot unlock item by key: %s", $lock]);
+            $lock = array_shift($locks);
+            if (!$this->driver->unlock($this->metadata, $lock)) {
+                array_unshift($locks, $lock);
+                throw new CannotUnlockException(["cannot unlock resource: %s", $lock]);
             }
         }
     }
 
     public function begin(): void
     {
-        $this->getDriver()->begin();
+        $this->driver->begin();
     }
 
     public function commit(): void
     {
-        $this->getDriver()->commit();
+        $this->driver->commit();
     }
 
     public function rollback(): void
     {
-        $this->getDriver()->rollback();
+        $this->driver->rollback();
     }
 
     public function getDriver(): DriverInterface
