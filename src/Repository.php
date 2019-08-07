@@ -114,6 +114,21 @@ class Repository implements RepositoryInterface
         }
     }
 
+    public function begin(): void
+    {
+        $this->getDriver()->begin();
+    }
+
+    public function commit(): void
+    {
+        $this->getDriver()->commit();
+    }
+
+    public function rollback(): void
+    {
+        $this->getDriver()->rollback();
+    }
+
     public function getDriver(): DriverInterface
     {
         return $this->driver;

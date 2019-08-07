@@ -119,6 +119,10 @@ interface ManagerInterface
      */
     public function unlock(array &$locks): void;
 
+    public function begin(): void;
+    public function commit(): void;
+    public function rollback(): void;
+
     /**
      * @return RepositoryInterface
      */

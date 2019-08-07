@@ -144,6 +144,21 @@ abstract class AbstractManager implements ManagerInterface, PackerInterface
         $this->getRepository()->unlock($locks);
     }
 
+    public function begin(): void
+    {
+        $this->getRepository()->begin();
+    }
+
+    public function commit(): void
+    {
+        $this->getRepository()->commit();
+    }
+
+    public function rollback(): void
+    {
+        $this->getRepository()->rollback();
+    }
+
     private function packMany(array $entities): array
     {
         $items = [];

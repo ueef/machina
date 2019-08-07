@@ -25,6 +25,10 @@ interface RepositoryInterface {
     public function lock(?array &$locks, bool $wait, array ...$keys): void;
     public function unlock(array &$locks): void;
 
+    public function begin(): void;
+    public function commit(): void;
+    public function rollback(): void;
+
     public function getDriver(): DriverInterface;
     public function getMetadata(): MetadataInterface;
 }
