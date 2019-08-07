@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Ueef\Machina\Properties;
 
 use Ueef\Machina\Interfaces\PropertyInterface;
-use Ueef\Machina\Exceptions\PropertyValidationException;
 
 abstract class AbstractProperty implements PropertyInterface
 {
