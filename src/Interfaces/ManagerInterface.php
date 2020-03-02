@@ -11,8 +11,8 @@ interface ManagerInterface
     public function get(array $filters = [], array $orders = [], int $offset = 0);
     public function getByKey(array ...$keys);
 
-    public function find(array $filters = [], array $orders = [], int $limit = 0, int $offset = 0): array;
-    public function findByKey(array ...$keys): array;
+    public function find(array $filters = [], array $orders = [], int $limit = 0, int $offset = 0): ObjectsCollectionInterface;
+    public function findByKey(array ...$keys): ObjectsCollectionInterface;
 
     public function count(array $filters = []): int;
     public function countByKey(array ...$keys): int;

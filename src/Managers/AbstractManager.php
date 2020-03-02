@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Ueef\Machina\Managers;
 
+use Ueef\Machina\Collections\ObjectsCollection;
+use Ueef\Machina\Interfaces\ObjectsCollectionInterface;
 use Ueef\Packer\Interfaces\PackerInterface;
 use Ueef\Machina\Interfaces\ManagerInterface;
 use Ueef\Machina\Exceptions\ManagerException;
@@ -39,14 +41,14 @@ abstract class AbstractManager implements ManagerInterface, PackerInterface
         return null;
     }
 
-    public function find(array $filters = [], array $orders = [], int $limit = 0, int $offset = 0): array
+    public function find(array $filters = [], array $orders = [], int $limit = 0, int $offset = 0): ObjectsCollectionInterface
     {
-        return $this->unpackMany($this->getRepository()->find($filters, $orders, $limit, $offset));
+        return new ObjectsCollection($this->unpackMany($this->getRepository()->find($filters, $orders, $limit, $offset)));
     }
 
-    public function findByKey(array ...$keys): array
+    public function findByKey(array ...$keys): ObjectsCollectionInterface
     {
-        return $this->unpackMany($this->getRepository()->findByKey(...$keys));
+        return new ObjectsCollection($this->unpackMany($this->getRepository()->findByKey(...$keys)));
     }
 
     public function count(array $filters = []): int
