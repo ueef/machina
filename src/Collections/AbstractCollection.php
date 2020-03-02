@@ -6,7 +6,7 @@ namespace Ueef\Machina\Collections;
 
 use Ueef\Machina\Interfaces\CollectionInterface;
 
-class AbstractCollection implements CollectionInterface
+abstract class AbstractCollection implements CollectionInterface
 {
     private array $items;
     private int   $cursor;
