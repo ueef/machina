@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Ueef\Machina\Drivers;
 
+use Ueef\Machina\Collections\ArraysCollection;
 use Ueef\Machina\Exceptions\DriverException;
+use Ueef\Machina\Interfaces\ArraysCollectionInterface;
 use Ueef\Machina\Interfaces\DriverInterface;
 use Ueef\Machina\Interfaces\FilterInterface;
 use Ueef\Machina\Interfaces\MetadataInterface;
@@ -28,7 +30,7 @@ class StubDriver implements DriverInterface
         }
     }
 
-    public function find(MetadataInterface $metadata, array $filters = [], array $orders = [], int $limit = 0, int $offset = 0): array
+    public function find(MetadataInterface $metadata, array $filters = [], array $orders = [], int $limit = 0, int $offset = 0): ArraysCollectionInterface
     {
         $rows = $this->getRows($metadata->getSource());
         $rows = $this->filterRows($rows, $filters);
@@ -40,7 +42,7 @@ class StubDriver implements DriverInterface
             $rows = array_slice($rows, $offset, null);
         }
 
-        return $rows;
+        return new ArraysCollection($rows);
     }
 
     public function count(MetadataInterface $metadata, array $filters = []): int

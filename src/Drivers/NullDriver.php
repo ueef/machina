@@ -3,11 +3,10 @@ declare(strict_types=1);
 
 namespace Ueef\Machina\Drivers;
 
-use Ueef\Machina\Exceptions\DriverException;
+use Ueef\Machina\Collections\ArraysCollection;
+use Ueef\Machina\Interfaces\ArraysCollectionInterface;
 use Ueef\Machina\Interfaces\DriverInterface;
-use Ueef\Machina\Interfaces\FilterInterface;
 use Ueef\Machina\Interfaces\MetadataInterface;
-use Ueef\Machina\Interfaces\PropertyInterface;
 
 class NullDriver implements DriverInterface
 {
@@ -24,9 +23,9 @@ class NullDriver implements DriverInterface
         $this->items = $items;
     }
 
-    public function find(MetadataInterface $metadata, array $filters = [], array $orders = [], int $limit = 0, int $offset = 0): array
+    public function find(MetadataInterface $metadata, array $filters = [], array $orders = [], int $limit = 0, int $offset = 0): ArraysCollectionInterface
     {
-        return [];
+        return new ArraysCollection([]);
     }
 
     public function count(MetadataInterface $metadata, array $filters = []): int
